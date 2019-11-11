@@ -1,0 +1,63 @@
+.com-side{
+	display: grid;
+	grid-template-columns: auto 1fr;
+  	grid-template-rows: auto 1fr;
+  	height: 100%;
+}
+.com-title{
+	grid-column: span 2;
+	padding: 0 10px;
+	line-height: 2.8;
+	margin: 0;
+	font-size: 14px;
+}
+.com-group-button{
+	display: block;
+	width: 50px;
+	height: 50px;
+	font-size: 20px;
+	text-align: center;
+	line-height: 50px;
+	color: #666;
+	border: 0;
+	border-left: solid transparent;
+	background: none;
+	outline: 0;
+	transition: .2s;
+}
+.com-group-button:hover{
+	background-color: #f1f1f1;
+}
+.com-list{
+	display: grid;
+	padding: 0 10px;
+	grid-template-columns: repeat(1,1fr);
+	grid-gap: 10px;
+	align-self: start;
+}
+.com-item{
+    display: flex;
+	cursor: default;
+	background-color: #f1f1f1;
+	text-align: center;
+	padding: 5px;
+	font-size: 18px;
+	width: 60px;
+    height: 60px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.com-item-name{
+	margin: 0;
+	width: 100%;
+	font-size: 12px;
+	margin-top: 3px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.com-group-button[data-select=true]{
+	color: var(--theme-color);
+	border-color: var(--theme-color);
+}

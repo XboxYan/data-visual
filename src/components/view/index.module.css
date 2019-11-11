@@ -1,0 +1,127 @@
+.view {
+	position: absolute;
+	background-color: #fff;
+    outline:calc(1px / var(--zoom)) dashed transparent;
+    outline-offset: calc(-1px / var(--zoom));
+    transition: .2s outline-color;
+}
+.view::after{
+	content:'';
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	/*box-shadow: 3px 3px 15px rgba(0,0,0,.2);*/
+	/*outline:2px solid var(--theme-color);*/
+	opacity: 0;
+	transition: .2s;
+}
+.view[data-select=false]:hover{
+    z-index: 2;
+    outline-color:var(--theme-color);
+}
+.view[dragging]{
+	pointer-events: none;
+    z-index: 10!important;
+}
+.view[dragging]::after{
+	/*opacity: 1;*/
+}
+.resize{
+    position:absolute;
+    box-sizing:border-box;
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+    border:1px solid var(--theme-color);
+    transition:.2s;
+    outline:0;
+    pointer-events: none;
+    visibility: hidden;
+    opacity: 0;
+}
+.resize>i{
+    position:absolute;
+    box-sizing:border-box;
+    width:9px;
+    height:9px;
+    background:#fff;
+    border:1px solid var(--theme-color);
+    transition:.2s opacity;
+    pointer-events: all;
+    margin:auto;
+    transform: scale(calc(1 / var(--zoom)));
+}
+.resize>i::before{
+    position:absolute;
+    content:'';
+    left:-5px;
+    top:-5px;
+    right:-5px;
+    bottom:-5px;
+}
+.resize>i:active::before{
+    transform:scale(2);
+}
+.view:focus-within,.view[data-select=true]{
+	z-index: 9;
+}
+.view:focus-within .resize,
+.view[data-select=true] .resize,
+/*:host([resizable]:hover) .resize,*/
+.resize:active{
+	opacity: 1;
+    visibility: visible;
+}
+
+.view[dragging]:focus-within .resize>i,
+.view[dragging][data-select=true] .resize>i{
+    visibility: hidden;
+}
+
+.tl{
+    top:-5px;
+    left:-5px;
+    cursor:nw-resize;
+}
+.t{
+    top:-5px;
+    left:0;
+    right:0;
+    cursor:n-resize;
+}
+.tr{
+    top:-5px;
+    right:-5px;
+    cursor:sw-resize;
+}
+.l{
+    left:-5px;
+    top:0;
+    bottom:0;
+    cursor:w-resize;
+}
+.r{
+    right:-5px;
+    top:0;
+    bottom:0;
+    cursor:e-resize;
+}
+.bl{
+    left:-5px;
+    bottom:-5px;
+    cursor:sw-resize;
+}
+.b{
+    bottom:-5px;
+    left:0;
+    right:0;
+    cursor:s-resize;
+}
+.br{
+    bottom:-5px;
+    right:-5px;
+    cursor:se-resize;
+}

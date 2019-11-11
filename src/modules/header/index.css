@@ -1,0 +1,9 @@
+.logo {
+    color:#fff;
+    padding: 0 10px;
+    margin: 0;
+    font-weight: normal;
+}
+.logo-sp{
+	color: var(--theme-color);
+}

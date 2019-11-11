@@ -1,0 +1,51 @@
+.desk-top{
+	position: absolute;
+    background-color: #fff;
+    transform: scale(var(--zoom)) translate3d(calc(1px * var(--x)),calc(1px * var(--y)),0);
+    /*transform-origin: left top;*/
+    transition: .2s;
+    outline: calc(1px / var(--zoom)) solid transparent;
+    background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+}
+
+.desk-top[data-select=true]{
+	outline-color: var(--theme-color);
+}
+
+.desk-top::before{
+	content:'';
+	position: absolute;
+	inset: 0;
+	background-image:linear-gradient( rgba(0,0,0,.065) calc(1px / var(--zoom)),transparent 0 ),linear-gradient( 90deg, rgba(0,0,0,.065) calc(1px / var(--zoom)),transparent 0 );
+    background-size:calc(var(--grid) * 1px) calc(var(--grid) * 1px);
+    pointer-events: none;
+    opacity: 0;
+    transition: .2s;
+    z-index: 1;
+}
+
+.desk-top[data-grid=true]::before{
+	opacity: 1;
+}
+
+.desk-top[data-move=true]{
+	cursor: -webkit-grab;
+	cursor: grab;
+	user-select: none;
+	transition: 0s;
+}
+
+.desk-top[data-move=true]>[data-type=element]{
+	pointer-events: none;
+}
+
+.desk-top[data-move=true]>[data-type=element] i{
+	pointer-events: none;
+}
+
+.desk-top[data-move=true]:active{
+	cursor: -webkit-grabbing;
+	cursor: grabbing;
+}

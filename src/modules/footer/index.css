@@ -1,0 +1,22 @@
+.footer-action{
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	padding: 10px;
+}
+.slider-zoom{
+	width: 100px;
+	margin: 0 10px;
+}
+.btn-zoom{
+	cursor: pointer;
+	transition: .2s;
+}
+.btn-zoom:hover{
+	color: var(--theme-color);
+}
+
+.btn-zoom[disabled]{
+	pointer-events: none;
+	opacity:.5;
+}

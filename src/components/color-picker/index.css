@@ -1,0 +1,45 @@
+.color-input{
+	position: relative;
+	width: 100%;
+}
+.color-btn{
+	padding: 5px;
+    padding-right: 30px;
+	background-clip: content-box!important;
+	text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.color-clear{
+	position: absolute;
+	color: rgba(0,0,0,.25);
+	font-size: 12px;
+	right: 12px;
+	top: 50%;
+	transform: translateY(-50%);
+	transition: .2s;
+	cursor: pointer;
+}
+.color-empty{
+	padding-left: 25px;
+}
+.color-clear:hover{
+	color: rgba(0, 0, 0, 0.45);
+}
+.color-picker input{
+	outline-color:var(--theme-color);
+	transition: .2s; 
+}
+.color-picker{
+	border-radius: 3px;
+	overflow: hidden;
+	box-shadow: -3px 3px 15px rgba(0,0,0,.2)!important;
+}
+.chrome-picker .flexbox-fix[style="display: flex;"]>div:first-child>div:first-child{
+	margin-top: 2px!important;
+    width: 20px!important;
+    height: 20px!important;
+    border-radius: 10px!important;
+}
+.chrome-picker .flexbox-fix[style="display: flex;"]>div:first-child>div:first-child>div{
+	border-radius: 10px!important;
+}

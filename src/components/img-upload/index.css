@@ -1,0 +1,90 @@
+.upload-btn{
+	position: relative;
+	height: 100px;
+	padding: 0;
+}
+.upload-input{
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	cursor: pointer;
+}
+.upload-btn:focus-within{
+	color:var(--theme-color);
+	border-color:var(--theme-color);
+}
+.upload-icon{
+	font-size: 30px;
+	opacity: .65;
+}
+
+.upload-preview{
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	inset:0;
+	border: 10px solid transparent;
+	background-clip: content-box;
+	background-color: #fafafa;
+	background-size: contain,auto 30%;
+	background-repeat: no-repeat;
+	background-position: center;
+	visibility: hidden;
+	opacity: 0;
+	cursor: default;
+	transform: scale(.5);
+	transition: .2s;
+	z-index: 5;
+}
+.upload-preview[data-show=true]{
+	visibility: visible;
+	opacity: 1;
+	transform: scale(1);
+}
+.upload-preview .anticon{
+	margin: 0 5px;
+	font-size: 20px;
+	cursor: pointer;
+	color: #fff;
+	position: relative;
+	z-index: 2;
+	visibility: hidden;
+	opacity: 0;
+	transition: .2s;
+}
+.upload-preview::before{
+	content: '';
+	position: absolute;
+	inset:0;
+	background: rgba(0,0,0,.5);
+	visibility: hidden;
+	opacity: 0;
+	transition: .2s;
+}
+.upload-preview:hover::before{
+	visibility: visible;
+	opacity: 1;
+}
+
+.upload-preview:hover .anticon{
+	visibility: visible;
+	opacity: 0.65;
+}
+
+.upload-preview .anticon:hover{
+	opacity: 1;
+}
+
+.upload-content{
+	width: 100%;
+}
+
+.upload-select{
+	display: flex;
+	height: 32px;
+	align-items: center;
+}

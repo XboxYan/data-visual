@@ -1,0 +1,82 @@
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track-piece {
+  width: 4px;
+  background: none;
+  border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb:vertical {
+  width: 4px;
+  height: 0px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  transition: .2s;
+}
+
+::-webkit-scrollbar-thumb:horizontal {
+  width: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  transition: .2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.45)
+}
+
+.layout {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: auto 1fr 300px;
+  grid-template-rows: auto 1fr auto;
+  row-gap: 10px;
+  background: #f1f1f1;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  grid-column: span 3;
+  align-items: center;
+  background: #333;
+  height: 50px;
+  margin: -10px -10px 0 -10px;
+  position: relative;
+  z-index: 10;
+  box-shadow: 3px 3px 15px rgba(0,0,0,.2);
+}
+
+.main {
+  position: relative;
+  margin: 0 10px;
+  /*overflow: hidden;*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.aside {
+  overflow: hidden;
+  background: #fff;
+  grid-row: span 2;
+  position: relative;
+  z-index: 10;
+  box-shadow: 3px 3px 15px rgba(0,0,0,.2);
+  border-radius: 5px;
+}
+
+.footer {
+  background-color: #fff;
+  margin: 0 10px;
+  position: relative;
+  z-index: 10;
+  box-shadow: 3px 3px 15px rgba(0,0,0,.2);
+  border-radius: 5px;
+  justify-self: end;
+}
