@@ -33,11 +33,13 @@ const comList = [{
   icon: 'font-size',
   child: [{
       name: '标题',
-      icon: 'font-size'
+      icon: 'font-size',
+      type: 'Text'
     },
     {
       name: '跑马灯',
-      icon: ''
+      icon: '',
+      type: 'Marquee'
     },
     {
       name: '时间',
@@ -47,7 +49,14 @@ const comList = [{
 }]
 
 const ComList = () => {
-    const [index,setIndex] = useState(0);
+    const [index,setIndex] = useState(2);
+
+    const dragstart = (ev,type) => {
+        ev.dataTransfer.setData('type',type);
+        ev.dataTransfer.setData('offsetX',ev.nativeEvent.offsetX);
+        ev.dataTransfer.setData('offsetY',ev.nativeEvent.offsetY);
+    }
+
     return <div className="com-side">
         <h3 className="com-title">组件列表</h3>
         <div className="com-group">
@@ -64,7 +73,7 @@ const ComList = () => {
         	{
         		comList[index].child.map((el,i)=>(
 	        		<Tooltip key={i}>
-	        			<div className="com-item" draggable={true}>
+	        			<div className="com-item" draggable={true} onDragStart={(ev)=>dragstart(ev,el.type)}>
 	        				<Icon type={el.icon} />
 	        				<h5 className="com-item-name">{el.name}</h5>
 	        			</div>

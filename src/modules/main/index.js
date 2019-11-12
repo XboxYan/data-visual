@@ -1,10 +1,13 @@
 import React, { useContext,useState,useEffect } from 'react';
 import './index.css';
-import Text, { TextConfig } from '../../components/text';
+import Text from '../../components/text';
 import { LayoutContext } from '../../store';
+import { defaultprops } from '../../store/defaultprops';
+
 
 const MapView = {
-	'Text':Text
+	'Text':Text,
+	'Marquee':Text
 }
 
 const Main = () => {
@@ -13,7 +16,7 @@ const Main = () => {
 
 	let moverun = false;
 
-	let posStart = [0,0]; 
+	let posStart = [0,0];
 
 	const { layout, dispatch, config, setConfig, focusIndex, setFocusIndex } = useContext(LayoutContext);
 
@@ -32,10 +35,28 @@ const Main = () => {
 
 	const drop = (ev) => {
 		ev.preventDefault();
+		if(ev.dataTransfer.getData('type')){
+			const type = ev.dataTransfer.getData('type');
+			const target = ev.target.closest('.desk-top');
+			const { left, top } = target.getBoundingClientRect();
+			const offsetX = ev.dataTransfer.getData('offsetX');
+			const offsetY = ev.dataTransfer.getData('offsetY');
+			dispatch({
+				type:'ADD',
+				props: defaultprops[type],
+				position: [(ev.clientX-left-offsetX)/config.zoom,(ev.clientY-top-offsetY)/config.zoom],
+				components: type
+			})
+			setFocusIndex([layout.length]);
+			ev.dataTransfer.clearData();
+		}
+		if(ev.dataTransfer.files[0]){
+			console.log(ev.dataTransfer.files[0])
+		}
 		if(dragData){
 			dispatch({
 				type:'UPDATA',
-				layout: {
+				source: {
 					left: dragData.left,
 					top: dragData.top,
 				},
@@ -56,7 +77,7 @@ const Main = () => {
 	const resizeend = (data,i,left,top) => {
 		dispatch({
 			type:'UPDATA',
-			layout: {
+			source: {
 				left: left + data.offsetX,
 				top: top + data.offsetY,
 				width: data.width,
@@ -117,6 +138,15 @@ const Main = () => {
 		}
 	}
 
+	const onChange = (data,path,index) => {
+		dispatch({
+			type:'UPDATA',
+			source: data,
+			path:path,
+			index:index
+		})
+	}
+
 	useEffect(()=>{
 		document.addEventListener('mousemove',moveruning);
 		document.addEventListener('mouseup',moverunend);
@@ -158,14 +188,15 @@ const Main = () => {
 							grid={config.grid}
 							zoom={config.zoom}
 							style={el.style}
+							props={el.props}
+							data={el.data}
 							select={focusIndex.includes(i)}
+							onChange={(data,path)=>onChange(data,path,i)}
 							onClick={(ev)=>select(ev,i)}
 							onDragStart={(dragData)=>dragstart(dragData,i)} 
 							onDragEnd={dragend} 
 							onResize={resize}  
-							onResizeEnd={(resizeData)=>resizeend(resizeData,i,left,top)}>
-								<p>drag me</p>
-						</View>
+							onResizeEnd={(resizeData)=>resizeend(resizeData,i,left,top)} />
 					)
 				})
 			}

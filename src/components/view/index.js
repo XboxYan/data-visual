@@ -133,13 +133,14 @@ class View extends PureComponent {
 	                    break;
 	            }
 	            const grid = this.props.grid || 1;
+	            const { left, top } = this.props.style;
 	            $width = parseInt($width/grid)*grid;
 	            $height = parseInt($height/grid)*grid;
 	            this.offsetX = parseInt((this.mode.includes('l')?this.offsetX:0)/grid)*grid;
 	            this.offsetY = parseInt((this.mode.includes('t')?this.offsetY:0)/grid)*grid;
 	            this.view.current.style.width = $width + 'px';
 	            this.view.current.style.height = $height + 'px';
-	            this.view.current.style.transform = `translate3d(${this.props.left+this.offsetX}px,${this.props.top+this.offsetY}px,0)`
+	            this.view.current.style.transform = `translate3d(${left+this.offsetX}px,${top+this.offsetY}px,0)`
 	            this.props.onResize &&　this.props.onResize({
 	            	offsetX: this.offsetX,
 	                offsetY: this.offsetY,
@@ -172,7 +173,7 @@ class View extends PureComponent {
 			<div className={`${styles.view} ${className}`} 
 				data-type="element"
 				data-select={select}
-				style={{transform:`translate3d(${left}px,${top}px,0)`,width,height,opacity,'--zoom':zoom}} 
+				style={{transform:`translate3d(${left}px,${top}px,0)`,width,height,'--zoom':zoom}} 
 				//tabIndex="-1"
 				ref={this.view} 
 				draggable={draggable}
@@ -180,7 +181,9 @@ class View extends PureComponent {
 				onDragStart={this.dragstart} 
 				onDrag={this.drag}
 				onDragEnd={this.dragend}>
-				{children}
+				<div className={styles.view_inner} style={{opacity}}>
+					{children}
+				</div>
 				{
 					resizeable?
 					<div onMouseDown={this.resizestart} className={styles.resize} >

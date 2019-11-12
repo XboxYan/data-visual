@@ -48,6 +48,9 @@
     align-items: center;
     justify-content: center;
 }
+.com-item>.anticon{
+	pointer-events: none;
+}
 .com-item-name{
 	margin: 0;
 	width: 100%;
@@ -56,6 +59,7 @@
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	pointer-events: none;
 }
 .com-group-button[data-select=true]{
 	color: var(--theme-color);

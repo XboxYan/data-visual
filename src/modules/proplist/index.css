@@ -47,7 +47,7 @@
 
 .form-content .form-number{
 	width: 60px;
-	margin-left: 10px;
+	margin-left: 15px;
 }
 
 .form-content .ant-input-group.ant-input-group-compact{
@@ -70,5 +70,10 @@
 }
 .form-visible:hover{
 	color: var(--theme-color);
+}
+
+.form-title{
+	grid-column: span 2;
+	margin: 0!important;
 }
 

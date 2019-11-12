@@ -3,26 +3,7 @@ import React, { createContext, useReducer, useState, Fragment } from 'react'
 export const LayoutContext = createContext(null);
 
 const initialLayout = [
-	{
-	  type: 'Text',
-	  style: {
-	    width: 200,
-	    height: 200,
-	    left: 200,
-	    top: 200,
-	    opacity: 1
-	  }
-	},
-	{
-	  type: 'Text',
-	  style: {
-	    width: 300,
-	    height: 200,
-	    left: 500,
-	    top: 300,
-	    opacity: 1
-	  }
-	}
+	
 ]
 
 const initialConfig = {
@@ -35,13 +16,23 @@ const initialConfig = {
 	backgroundImage:''
 }
 
-const LayoutAdd = () => {
-
+const LayoutAdd = (state, action) => {
+	const style = {...action.props.style}
+	style.left = Number(action.position[0].toFixed(0));
+	style.top = Number(action.position[1].toFixed(0));
+	const layout = [...state,{
+		type:action.components,
+		atype:action.props.atype,
+		props:{...action.props.props}||{},
+		style:style,
+		data:{...action.props.data}||{}
+	}];
+	return layout;
 }
 
 const LayoutUpdata = (state, action) => {
 	const layout = [...state];
-	Object.assign(layout[action.index][action.path],action.layout);
+	Object.assign(layout[action.index][action.path],action.source);
 	return layout;
 }
 

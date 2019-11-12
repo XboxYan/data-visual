@@ -1,0 +1,110 @@
+.text-inner{
+	display: flex;
+	height: 100%;
+	align-items: center;
+	overflow: hidden;
+	position: relative;
+}
+
+.text-edit{
+	font-size: 16px;
+	cursor: pointer;
+	margin-left: .3em;
+	color: var(--theme-color);
+	visibility: hidden;
+	opacity: 0;
+	transition: .2s;
+	pointer-events: all;
+}
+
+.text-inner[data-muti] .text-edit,
+.text-inner[data-marquee] .text-edit{
+	position: absolute;
+	right: .5em;
+	bottom: .5em;
+}
+
+.text-inner[data-edit="false"]:hover .text-edit{
+	visibility: visible;
+	opacity: 1;
+}
+
+.text-inner[alignx="center"]{
+	justify-content: center;
+}
+
+.text-inner[alignx="left"]{
+	justify-content: flex-start;
+}
+
+.text-inner[alignx="right"]{
+	justify-content: flex-end;
+}
+
+.text-display{
+	pointer-events: none;
+}
+
+.text-inner[data-muti] .text-display{
+	white-space: nowrap;
+	transition: .2s;
+	max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+ .text-inner[data-marquee] .text-display{
+	width: 100%;
+    height: 100%;
+    align-items: center;
+    display: flex;
+}
+
+.text-marquee{
+    /*min-width: 100%;*/
+}
+
+.text-marquee-con{
+	position: absolute;
+	display: flex;
+	white-space: nowrap;
+	min-width: 200%;
+	animation: marquee 3s linear infinite;
+}
+
+.text-view[dragging] .text-marquee-con{
+	/*animation-play-state: paused;*/
+}
+
+.text-input{
+	position: absolute;
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
+	padding: .2em;
+	white-space: pre-wrap;
+	/*visibility: hidden;*/
+	opacity: 0;
+	outline: 0;
+	transition: .2s;
+	z-index: -1;
+	overflow: auto;
+	font-size: 16px;
+}
+
+.text-inner[data-edit="true"] .text-input{
+	/*visibility: visible;*/
+	z-index: 1;
+	opacity: 1;
+}
+
+.text-inner[data-edit="true"] .text-display{
+	visibility: hidden;
+	opacity: 0;
+}
+
+@keyframes marquee{
+	to {
+		transform: translate3d(-50%,0,0);
+	}
+}

@@ -1,21 +1,23 @@
 .view {
 	position: absolute;
-	background-color: #fff;
+	/*background-color: #fff;*/
     outline:calc(1px / var(--zoom)) dashed transparent;
     outline-offset: calc(-1px / var(--zoom));
     transition: .2s outline-color;
 }
-.view::after{
+.view1::after{
 	content:'';
 	position: absolute;
-	left: 0;
-	top: 0;
-	bottom: 0;
-	right: 0;
+	inset: 0;
 	/*box-shadow: 3px 3px 15px rgba(0,0,0,.2);*/
 	/*outline:2px solid var(--theme-color);*/
 	opacity: 0;
 	transition: .2s;
+}
+.view_inner{
+    height: 100%;
+    overflow: hidden;
+    /*background-color: #fff;*/
 }
 .view[data-select=false]:hover{
     z-index: 2;
