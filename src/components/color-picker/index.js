@@ -3,8 +3,9 @@ import { Button,Dropdown,Icon } from 'antd';
 import { ChromePicker } from 'react-color';
 import './index.css';
 
+let timer = null;
+
 const ColorPicker = ({color,onChange}) => {
-	let timer = null;
 
 	const parseColor = (color) => {
 		const rgba = `rgba(${color.rgb.r},${color.rgb.g},${color.rgb.b},${color.rgb.a})`;

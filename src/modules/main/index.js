@@ -1,4 +1,4 @@
-import React, { useContext,useState,useEffect } from 'react';
+import React, { useContext,useState,useEffect,useRef,useCallback } from 'react';
 import './index.css';
 import Text from '../../components/text';
 import { LayoutContext } from '../../store';
@@ -10,24 +10,85 @@ const MapView = {
 	'Marquee':Text
 }
 
+let ipos = [0,0]
+
+const useMove = (zoom) => {
+	const [ move,setMove ] = useState(false);
+	const [ pos,setPos ] = useState([0,0]);
+	
+	useEffect(()=>{
+		const desk = document.getElementById('desk-top');
+		let drag = false;
+		let start = [0,0];
+		let posStart = ipos;
+		let moverun = false;
+		const moveruning = (ev)=>{
+			if(moverun){
+				ipos = [posStart[0]+(ev.clientX-start[0])/zoom,posStart[1]+(ev.clientY-start[1])/zoom];
+				setPos(ipos);
+			}
+		}
+		
+		const moverunend = () => {
+			console.log('moverunend')
+			moverun = false;
+		}
+		const moverunstart = (ev) => {
+			if(drag){
+				moverun = true;
+				start = [ev.clientX,ev.clientY];
+				posStart = ipos;
+			}
+		}
+		
+		const movestart = (ev) => {
+			if(ev.altKey){
+				ev.preventDefault();
+			}
+			if(ev.keyCode===32){
+				setMove(true);
+				drag = true;
+				ev.target.focus();
+				
+			}
+		}
+		const moveend = (ev) => {
+			setMove(false);
+			drag = false;
+		}
+
+		console.log(desk)
+		desk.addEventListener('keydown',movestart);
+		desk.addEventListener('keyup',moveend);
+		desk.addEventListener('mousedown',moverunstart);
+		document.addEventListener('mousemove',moveruning);
+		document.addEventListener('mouseup',moverunend);
+		return ()=>{
+			desk.removeEventListener('keydown',movestart);
+			desk.removeEventListener('keyup',moveend);
+			desk.removeEventListener('mousedown',moverunstart);
+			document.removeEventListener('mousemove',moveruning)
+			document.removeEventListener('mouseup',moverunend)
+		}
+	},[zoom])
+	
+	return {move,pos}
+}
+
 const Main = () => {
 
 	let dragData = null;
 
-	let moverun = false;
-
-	let posStart = [0,0];
-
 	const { layout, dispatch, config, setConfig, focusIndex, setFocusIndex } = useContext(LayoutContext);
-
-	const [ move,setMove ] = useState(false);
-
-	const [ pos,setPos ] = useState([0,0]);
 
 	const dragstart = (target,i) => {
 		dragData = target;
 		dragData.index = i;
 	}
+
+	const desk = useRef(null);
+
+	const {move,pos} = useMove(config.zoom);
 
 	const dragover = (ev) => {
 		ev.preventDefault();
@@ -98,43 +159,24 @@ const Main = () => {
 		}
 	}
 
+	const wheelmove = (ev) => {
+		console.log(ev)
+		const dir = ev.deltaY > 0 ? -50:50;
+		const newPos = [...pos];
+		if(ev.shiftKey){
+			newPos[0] += dir;
+		}else{
+			newPos[1] += dir;
+		}
+		//setPos(newPos);
+	}
+
 	const select = (ev,i) => {
 		ev.stopPropagation();
 		if(!move){
-			setFocusIndex([i]);
-		}
-	}
-
-	const movestart = (ev) => {
-		if(ev.altKey){
-			ev.preventDefault();
-		}
-		if(ev.keyCode===32){
-			setMove(true);
-			ev.target.focus();
-		}
-	}
-
-	const moveend = (ev) => {
-		setMove(false);
-	}
-
-	const moverunstart = (ev) => {
-		if(move){
-			moverun = true;
-			posStart = [ev.clientX,ev.clientY];
-		}
-	}
-
-	const moverunend = () => {
-		if(moverun){
-			moverun = false;
-		}
-	}
-
-	const moveruning = (ev)=>{
-		if(moverun){
-			setPos([pos[0]+(ev.clientX-posStart[0])/config.zoom,pos[1]+(ev.clientY-posStart[1])/config.zoom]);
+			if(!focusIndex.includes(i)){
+				setFocusIndex([i]);
+			}
 		}
 	}
 
@@ -147,21 +189,18 @@ const Main = () => {
 		})
 	}
 
-	useEffect(()=>{
-		document.addEventListener('mousemove',moveruning);
-		document.addEventListener('mouseup',moverunend);
-	})
-
 	return (
 		<div className="desk-top" 
 			data-move={move}
 			data-grid={config.gridvisible&&config.grid>=5}
 			onWheel={zoom}
-			onMouseDown={moverunstart}
+			id="desk-top"
+			ref={desk}
+			//onMouseDown={moverunstart}
 			onClick={(ev)=>select(ev,-1)} 
 			data-select={focusIndex.includes(-1)} 
-			onKeyDown={movestart} 
-			onKeyUp={moveend} 
+			//onKeyDown={movestart} 
+			//onKeyUp={moveend} 
 			tabIndex={-2}
 			style={{
 				width:config.width,

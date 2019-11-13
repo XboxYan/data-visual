@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Input,InputNumber,Slider,Icon } from 'antd';
 import { LayoutContext } from '../../store';
 import ColorPicker from '../../components/color-picker';
@@ -6,16 +6,31 @@ import ImgUpload from '../../components/img-upload';
 
 const InputGroup = Input.Group;
 
+let timer = null;
+
 const DeskPane = () => {
     const { config, setConfig } = useContext(LayoutContext);
 
     const { width, height, grid, backgroundColor, backgroundImage, gridvisible } = config;
 
-    const setValue = (value,name) => {
-        setConfig({
-            ...config,
-            [name]:value
-        })
+    const [values, setValues] = useState({
+        width, 
+        height, 
+        grid, 
+        backgroundColor, 
+        backgroundImage, 
+        gridvisible
+    })
+
+    const setValue = (key_value) => {
+        setValues({...values,...key_value});
+        timer && clearTimeout(timer);
+        timer = setTimeout(()=>{
+            setConfig({
+                ...config,
+                ...key_value
+            })
+        },100);
     }
 
     return (
@@ -24,36 +39,36 @@ const DeskPane = () => {
             <div className="form-item">
                 <InputGroup compact>
                     <InputNumber className="form-flex form-input"
-                        value={width}
-                        onChange={(value)=>setValue(value,'width')}
+                        value={values.width}
+                        onChange={(value)=>setValue({width:value})}
                         min={320}
-                        step={grid}
+                        step={values.grid}
                     />
                     <InputNumber className="form-flex form-input"
                         min={320}
-                        value={height}
-                        step={grid}
-                        onChange={(value)=>setValue(value,'height')}
+                        value={values.height}
+                        step={values.grid}
+                        onChange={(value)=>setValue({height:value})}
                     />
                 </InputGroup>
             </div>
             <label className="form-lable">背景颜色</label>
             <div className="form-item">
-                <ColorPicker color={backgroundColor} onChange={(value)=>setValue(value,'backgroundColor')}/>
+                <ColorPicker color={values.backgroundColor} onChange={(value)=>setValue({backgroundColor:value})}/>
             </div>
             <label className="form-lable">背景图片</label>
             <div className="form-item">
-                <ImgUpload url={backgroundImage} onChange={(value)=>setValue(value,'backgroundImage')}/>
+                <ImgUpload url={values.backgroundImage} onChange={(value)=>setValue({backgroundImage:value})}/>
             </div>
-            <label className="form-lable"><Icon className="form-visible" onClick={()=>setValue(!gridvisible,'gridvisible')} type={gridvisible?"eye":"eye-invisible"}/>栅格</label>
+            <label className="form-lable"><Icon className="form-visible" onClick={()=>setValue({gridvisible:!values.gridvisible})} type={values.gridvisible?"eye":"eye-invisible"}/>栅格</label>
             <div className="form-item">
-                <Slider value={grid} className="form-flex form-slider" onChange={(value)=>setValue(value,'grid')} min={1} max={50} />
+                <Slider value={values.grid} className="form-flex form-slider" onChange={(value)=>setValue({grid:value})} min={1} max={50} />
                 <InputNumber
                     min={1}
                     max={50}
-                    value={grid}
+                    value={values.grid}
                     className="form-number"
-                    onChange={(value)=>setValue(value,'grid')}
+                    onChange={(value)=>setValue({grid:value})}
                 />
             </div>
         </div>

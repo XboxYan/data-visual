@@ -62,6 +62,7 @@
 
 .text-marquee{
     /*min-width: 100%;*/
+    padding-right:5em;
 }
 
 .text-marquee-con{
@@ -70,6 +71,10 @@
 	white-space: nowrap;
 	min-width: 200%;
 	animation: marquee 3s linear infinite;
+}
+
+.text-inner[data-edit="true"] .text-marquee-con{
+	animation: none;
 }
 
 .text-view[dragging] .text-marquee-con{
@@ -90,6 +95,8 @@
 	z-index: -1;
 	overflow: auto;
 	font-size: 16px;
+	border-color: transparent;
+	background: none;
 }
 
 .text-inner[data-edit="true"] .text-input{

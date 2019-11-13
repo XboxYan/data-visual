@@ -3,11 +3,11 @@ import { Button, Icon, message, Radio, Input } from 'antd';
 
 import './index.css';
 
+let timer = null;
+
 const ImgUpload = (props) => {
 
 	//https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png
-
-	let timer = null;
 
 	const isBase64 = props.url.startsWith('data:image')||!props.url;
 

@@ -3,6 +3,8 @@ import { Icon } from 'antd';
 import View from '../view';
 import './index.css';
 
+let timer = null;
+
 const MapStyle = {
 	color:'color',
 	fontSize: 'fontSize'
@@ -30,31 +32,42 @@ const Text = (props) => {
 
 	const [width,setWidth] = useState(style.width);
 
-	const onChange = (ev) => {
-        props.onChange && props.onChange({text:ev.target.innerText},'data');
-        setEdit(false);
+	const [value,setValue] = useState(text);
+
+	const change = (ev) => {
+		const target = ev.target;
+		setValue(target.value);
+		timer && clearTimeout(timer);
+		timer = setTimeout(()=>{
+			props.onChange && props.onChange({text:target.value},'data');
+		},300);
+    }
+
+    const blur = () => {
+    	setEdit(false)
     }
 
     const edit = () => {
     	if(!isEdit){
 			setEdit(true);
-			input.current.focus();
-			const range = window.getSelection();
-	        range.selectAllChildren(input.current);
-	        range.collapseToEnd();
+			input.current.select();
     	}
     }
 
     useEffect(() => {
     	if(marquee){
-        	setWidth(marqueeEl.current.offsetWidth);
+        	setWidth(marqueeEl.current.getBoundingClientRect().width);
     	}
-    },[text,style.width,style.fontSize]);
+    },[text,style.width,style.fontSize,marquee]);
+
+    useEffect(() => {
+    	setValue(text);
+    },[text]);
 
   	return (
     	<View className="text-view" {...props} draggable={!isEdit}>
     		<div className="text-inner" data-edit={isEdit} data-muti={muti} data-marquee={marquee} style={parseStyle(style)} alignx={style.alignX} onDoubleClick={edit}>
-    			<div ref={input} className="text-input" contentEditable={true} onBlur={onChange} dangerouslySetInnerHTML={{__html: text}} />
+    			<textarea ref={input} className="text-input" onChange={change} onBlur={blur} value={value}/>
     			<div className="text-display">
     				{
     					marquee?
