@@ -85,86 +85,94 @@ class View extends PureComponent {
             this.mode = ev.target.dataset.type;
             this.width = this.view.current.offsetWidth;
             this.height = this.view.current.offsetHeight;
+            this.offsetX = 0;
+            this.offsetY = 0;
         }
 	}
 
+
+	mousemove = (ev)=>{
+        if(this.resizing && this.props.resizeable){
+            ev.stopPropagation();
+            window.getSelection().removeAllRanges();
+            const zoom = this.props.zoom || 1;
+            this.offsetX = (ev.pageX - this.startX)/zoom;
+            this.offsetY = (ev.pageY - this.startY)/zoom;
+            let $width = this.width;
+            let $height = this.height;
+            switch (this.mode) {
+                case 'tl':
+                	$width = this.width - this.offsetX;
+                	$height = this.height - this.offsetY;
+                    break;
+                case 't':
+                	$height = this.height - this.offsetY;
+                    break;
+                case 'tr':
+                	$width = this.width + this.offsetX;
+                	$height = this.height - this.offsetY;
+                    break;
+                case 'l':
+                	$width = this.width - this.offsetX;
+                    break;
+                case 'r':
+                	$width = this.width + this.offsetX;
+                    break;
+                case 'bl':
+                	$width = this.width - this.offsetX;
+                	$height = this.height + this.offsetY;
+                    break;
+                case 'b':
+                	$height = this.height + this.offsetY;
+                    break;
+                case 'br':
+                	$width = this.width + this.offsetX;
+                	$height = this.height + this.offsetY;
+                    break;
+                default:
+                    break;
+            }
+            const grid = this.props.grid || 1;
+            const { left, top } = this.props.style;
+            $width = parseInt($width/grid)*grid;
+            $height = parseInt($height/grid)*grid;
+            this.offsetX = parseInt((this.mode.includes('l')?this.offsetX:0)/grid)*grid;
+            this.offsetY = parseInt((this.mode.includes('t')?this.offsetY:0)/grid)*grid;
+            this.view.current.style.width = $width + 'px';
+            this.view.current.style.height = $height + 'px';
+            this.view.current.style.transform = `translate3d(${left+this.offsetX}px,${top+this.offsetY}px,0)`
+            this.props.onResize &&　this.props.onResize({
+            	offsetX: this.offsetX,
+                offsetY: this.offsetY,
+                width:$width,
+                height:$height,
+            })
+        }
+    }
+
+    mouseup = (ev)=>{
+		if(this.resizing){
+	        this.resizing = false;
+	        this.props.onResizeEnd &&　this.props.onResizeEnd({
+	        	offsetX: this.offsetX,
+                offsetY: this.offsetY,
+	            width:this.view.current.offsetWidth,
+	            height:this.view.current.offsetHeight,
+	        })
+		}
+        
+    }
 	
 
     componentDidMount = () => {
-    	document.addEventListener('mousemove',(ev)=>{
-	        if(this.resizing && this.props.resizeable){
-	            ev.stopPropagation();
-	            window.getSelection().removeAllRanges();
-	            const zoom = this.props.zoom || 1;
-	            this.offsetX = (ev.pageX - this.startX)/zoom;
-	            this.offsetY = (ev.pageY - this.startY)/zoom;
-	            let $width = this.width;
-	            let $height = this.height;
-	            switch (this.mode) {
-	                case 'tl':
-	                	$width = this.width - this.offsetX;
-	                	$height = this.height - this.offsetY;
-	                    break;
-	                case 't':
-	                	$height = this.height - this.offsetY;
-	                    break;
-	                case 'tr':
-	                	$width = this.width + this.offsetX;
-	                	$height = this.height - this.offsetY;
-	                    break;
-	                case 'l':
-	                	$width = this.width - this.offsetX;
-	                    break;
-	                case 'r':
-	                	$width = this.width + this.offsetX;
-	                    break;
-	                case 'bl':
-	                	$width = this.width - this.offsetX;
-	                	$height = this.height + this.offsetY;
-	                    break;
-	                case 'b':
-	                	$height = this.height + this.offsetY;
-	                    break;
-	                case 'br':
-	                	$width = this.width + this.offsetX;
-	                	$height = this.height + this.offsetY;
-	                    break;
-	                default:
-	                    break;
-	            }
-	            const grid = this.props.grid || 1;
-	            const { left, top } = this.props.style;
-	            $width = parseInt($width/grid)*grid;
-	            $height = parseInt($height/grid)*grid;
-	            this.offsetX = parseInt((this.mode.includes('l')?this.offsetX:0)/grid)*grid;
-	            this.offsetY = parseInt((this.mode.includes('t')?this.offsetY:0)/grid)*grid;
-	            this.view.current.style.width = $width + 'px';
-	            this.view.current.style.height = $height + 'px';
-	            this.view.current.style.transform = `translate3d(${left+this.offsetX}px,${top+this.offsetY}px,0)`
-	            this.props.onResize &&　this.props.onResize({
-	            	offsetX: this.offsetX,
-	                offsetY: this.offsetY,
-	                width:$width,
-	                height:$height,
-	            })
-	        }
-	    })
-    	document.addEventListener('mouseup',(ev)=>{
-    		if(this.resizing){
-		        this.resizing = false;
-		        this.props.onResizeEnd &&　this.props.onResizeEnd({
-		        	offsetX: this.offsetX,
-	                offsetY: this.offsetY,
-		            width:this.view.current.offsetWidth,
-		            height:this.view.current.offsetHeight,
-		        })
-    		}
-	        
-	    })
+    	document.addEventListener('mousemove',this.mousemove);
+    	document.addEventListener('mouseup',this.mouseup);
     }
 
-	
-
+    componentWillUnmount = () => {
+    	document.removeEventListener('mousemove',this.mousemove);
+    	document.removeEventListener('mouseup',this.mouseup);
+    }
 
 	render(){
 		const { className='',style:{left, top, width, height, opacity}, resizeable, draggable, children, zoom, select, onClick } = this.props;

@@ -1,13 +1,22 @@
 .color-input{
 	position: relative;
 	width: 100%;
+	display: flex;
+}
+.color-content{
+	width: 100%;
 }
 .color-btn{
+	position: relative;
 	padding: 5px;
     padding-right: 30px;
 	background-clip: content-box!important;
 	text-transform: uppercase;
     letter-spacing: 1px;
+    flex: 1;
+}
+.color-btn:hover{
+	z-index: 2;
 }
 .color-clear{
 	position: absolute;
@@ -42,4 +51,23 @@
 }
 .chrome-picker .flexbox-fix[style="display: flex;"]>div:first-child>div:first-child>div{
 	border-radius: 10px!important;
+}
+.color-preview{
+	display: flex;
+	margin-top: 10px;
+	height: 100px;
+	padding: 10px;
+	border-radius: 4px;
+    background-color: #fafafa;
+    border:1px dashed #d9d9d9;
+    background-clip: content-box;
+}
+.color-preview::after{
+	content: '';
+	margin: auto;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	border:1px solid #fff;
+	transform:rotate(calc(var(--deg) * 1deg)) translateY(-30px);
 }

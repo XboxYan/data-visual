@@ -3,8 +3,6 @@ import { Icon } from 'antd';
 import View from '../view';
 import './index.css';
 
-let timer = null;
-
 const MapStyle = {
 	color:'color',
 	fontSize: 'fontSize'
@@ -21,6 +19,8 @@ const parseStyle = (styles) => {
 }
 
 const Text = (props) => {
+
+	let timer = null;
 
 	const { props:{ muti, marquee, speed }, style, data: {text} } = props;
 

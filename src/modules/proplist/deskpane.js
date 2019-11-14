@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Input,InputNumber,Slider,Icon } from 'antd';
 import { LayoutContext } from '../../store';
-import ColorPicker from '../../components/color-picker';
+import { BackgroundColorPicker } from '../../components/color-picker';
 import ImgUpload from '../../components/img-upload';
 
 const InputGroup = Input.Group;
@@ -9,16 +9,18 @@ const InputGroup = Input.Group;
 let timer = null;
 
 const DeskPane = () => {
+
     const { config, setConfig } = useContext(LayoutContext);
 
-    const { width, height, grid, backgroundColor, backgroundImage, gridvisible } = config;
+    const { width, height, grid, backgroundColor, backgroundImage, backgroundTempURL, gridvisible } = config;
 
     const [values, setValues] = useState({
         width, 
         height, 
         grid, 
         backgroundColor, 
-        backgroundImage, 
+        backgroundImage,
+        backgroundTempURL,
         gridvisible
     })
 
@@ -54,11 +56,11 @@ const DeskPane = () => {
             </div>
             <label className="form-lable">背景颜色</label>
             <div className="form-item">
-                <ColorPicker color={values.backgroundColor} onChange={(value)=>setValue({backgroundColor:value})}/>
+                <BackgroundColorPicker color={values.backgroundColor} onChange={(value)=>setValue({backgroundColor:value})}/>
             </div>
             <label className="form-lable">背景图片</label>
             <div className="form-item">
-                <ImgUpload url={values.backgroundImage} onChange={(value)=>setValue({backgroundImage:value})}/>
+                <ImgUpload url={values.backgroundImage} tempUrl={values.backgroundTempURL} onChange={(value,tempUrl)=>setValue({backgroundImage:value,backgroundTempURL:tempUrl||''})}/>
             </div>
             <label className="form-lable"><Icon className="form-visible" onClick={()=>setValue({gridvisible:!values.gridvisible})} type={values.gridvisible?"eye":"eye-invisible"}/>栅格</label>
             <div className="form-item">

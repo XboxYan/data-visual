@@ -55,9 +55,10 @@ const DeskPane = () => {
     }
 
     useEffect(() => {
-        console.log(style)
-        setValue({...style,...props});
-    },[focusIndex,left,top,width,height]);
+        setValues({
+            ...style,...props
+        })
+    },[focusIndex,style,props,left,top,width,height]);
 
     return (
         <div className="form-content">

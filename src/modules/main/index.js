@@ -1,4 +1,4 @@
-import React, { useContext,useState,useEffect,useRef,useCallback } from 'react';
+import React, { useContext,useState,useEffect,useRef } from 'react';
 import './index.css';
 import Text from '../../components/text';
 import { LayoutContext } from '../../store';
@@ -10,34 +10,35 @@ const MapView = {
 	'Marquee':Text
 }
 
-let ipos = [0,0]
 
-const useMove = (zoom) => {
+
+const useMove = (ref,zoom) => {
 	const [ move,setMove ] = useState(false);
 	const [ pos,setPos ] = useState([0,0]);
-	
 	useEffect(()=>{
-		const desk = document.getElementById('desk-top');
+		const desk = ref.current;
 		let drag = false;
 		let start = [0,0];
-		let posStart = ipos;
+		let posStart = [0,0];
 		let moverun = false;
 		const moveruning = (ev)=>{
 			if(moverun){
-				ipos = [posStart[0]+(ev.clientX-start[0])/zoom,posStart[1]+(ev.clientY-start[1])/zoom];
-				setPos(ipos);
+				setPos([posStart[0]+(ev.clientX-start[0])/zoom,posStart[1]+(ev.clientY-start[1])/zoom]);
 			}
 		}
 		
 		const moverunend = () => {
-			console.log('moverunend')
 			moverun = false;
 		}
+
 		const moverunstart = (ev) => {
 			if(drag){
 				moverun = true;
 				start = [ev.clientX,ev.clientY];
-				posStart = ipos;
+				setPos(v=>{
+					posStart = v;
+					return v
+				})
 			}
 		}
 		
@@ -52,26 +53,37 @@ const useMove = (zoom) => {
 				
 			}
 		}
+
 		const moveend = (ev) => {
 			setMove(false);
 			drag = false;
 		}
 
-		console.log(desk)
+		const wheelmove = (ev) => {
+			if(!ev.altKey){
+				const dir = ev.deltaY > 0 ? -50:50;
+				if(ev.shiftKey){
+					setPos(v=>[v[0]+dir,v[1]]);
+				}else{
+					setPos(v=>[v[0],v[1]+dir]);
+				}
+			}
+		}
 		desk.addEventListener('keydown',movestart);
 		desk.addEventListener('keyup',moveend);
 		desk.addEventListener('mousedown',moverunstart);
+		desk.parentNode.addEventListener('wheel',wheelmove);
 		document.addEventListener('mousemove',moveruning);
 		document.addEventListener('mouseup',moverunend);
 		return ()=>{
 			desk.removeEventListener('keydown',movestart);
 			desk.removeEventListener('keyup',moveend);
 			desk.removeEventListener('mousedown',moverunstart);
+			desk.parentNode.removeEventListener('wheel',wheelmove);
 			document.removeEventListener('mousemove',moveruning)
 			document.removeEventListener('mouseup',moverunend)
 		}
-	},[zoom])
-	
+	},[ref,zoom])
 	return {move,pos}
 }
 
@@ -88,7 +100,7 @@ const Main = () => {
 
 	const desk = useRef(null);
 
-	const {move,pos} = useMove(config.zoom);
+	const {move,pos} = useMove(desk,config.zoom);
 
 	const dragover = (ev) => {
 		ev.preventDefault();
@@ -159,17 +171,7 @@ const Main = () => {
 		}
 	}
 
-	const wheelmove = (ev) => {
-		console.log(ev)
-		const dir = ev.deltaY > 0 ? -50:50;
-		const newPos = [...pos];
-		if(ev.shiftKey){
-			newPos[0] += dir;
-		}else{
-			newPos[1] += dir;
-		}
-		//setPos(newPos);
-	}
+	
 
 	const select = (ev,i) => {
 		ev.stopPropagation();
@@ -189,6 +191,8 @@ const Main = () => {
 		})
 	}
 
+	const gradientColor = Array.isArray(config.backgroundColor)?`,linear-gradient(${config.backgroundColor[0]}deg, ${config.backgroundColor[1]}, ${config.backgroundColor[2]})`:'';
+
 	return (
 		<div className="desk-top" 
 			data-move={move}
@@ -206,11 +210,11 @@ const Main = () => {
 				width:config.width,
 				height:config.height,
 				backgroundColor:config.backgroundColor,
-				backgroundImage:config.backgroundImage&&`url(${config.backgroundImage})`,
+				backgroundImage:`url(${config.backgroundTempURL||config.backgroundImage})${gradientColor}`,
 				'--grid':config.grid,
 				'--zoom':config.zoom,
 				'--x':pos[0],
-				'--y':pos[1]
+				'--y':pos[1],
 			}} 
 			onDragOver={dragover} 
 			onDrop={drop}
