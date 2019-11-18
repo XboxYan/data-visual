@@ -1,6 +1,6 @@
 import React, { useRef,useState,useEffect } from 'react';
 import { Button, Icon, message, Radio, Input } from 'antd';
-import { base64ToBlob } from '../../util'
+import { base64ToBlob } from '../../util';
 
 import './index.css';
 
@@ -55,7 +55,6 @@ const ImgUpload = (props) => {
 	    reader.addEventListener('load', () => {
 	    	setLoading(false);
 			URL.revokeObjectURL(props.tempUrl);
-			console.log(reader.result)
 			props.onChange && props.onChange(reader.result,URL.createObjectURL(file));
 	    });
 	}

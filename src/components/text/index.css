@@ -1,7 +1,5 @@
 .text-inner{
-	display: flex;
 	height: 100%;
-	align-items: center;
 	overflow: hidden;
 	position: relative;
 }
@@ -9,19 +7,22 @@
 .text-edit{
 	font-size: 16px;
 	cursor: pointer;
-	margin-left: .3em;
 	color: var(--theme-color);
 	visibility: hidden;
 	opacity: 0;
 	transition: .2s;
 	pointer-events: all;
-}
-
-.text-inner[data-muti] .text-edit,
-.text-inner[data-marquee] .text-edit{
 	position: absolute;
 	right: .5em;
 	bottom: .5em;
+}
+
+.text-title-con{
+	white-space: nowrap;
+	transition: .2s;
+	width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .text-inner[data-edit="false"]:hover .text-edit{
@@ -29,35 +30,31 @@
 	opacity: 1;
 }
 
-.text-inner[alignx="center"]{
-	justify-content: center;
+.text-title-con[alignx="center"]{
+	text-align: center;
 }
 
-.text-inner[alignx="left"]{
-	justify-content: flex-start;
+.text-title-con[alignx="left"]{
+	text-align: left;
 }
 
-.text-inner[alignx="right"]{
-	justify-content: flex-end;
+.text-title-con[alignx="right"]{
+	text-align: right;
 }
 
 .text-display{
 	pointer-events: none;
 }
 
-.text-inner[data-muti] .text-display{
-	white-space: nowrap;
-	transition: .2s;
-	max-width: 100%;
-    text-overflow: ellipsis;
-    overflow: hidden;
-}
-
- .text-inner[data-marquee] .text-display{
+.text-display{
 	width: 100%;
     height: 100%;
     align-items: center;
     display: flex;
+}
+
+.text-display[data-italic=true]{
+	font-style: italic;
 }
 
 .text-marquee{
@@ -71,6 +68,21 @@
 	white-space: nowrap;
 	min-width: 200%;
 	animation: marquee 3s linear infinite;
+}
+
+.text-mult{
+    /*min-width: 100%;*/
+    padding-bottom:2em;
+}
+
+.text-mult-con{
+	position: absolute;
+	top: 0;
+	white-space: pre-wrap;
+}
+
+.text-mult-con[data-scroll=true]{
+	animation: scroll 3s linear infinite;
 }
 
 .text-inner[data-edit="true"] .text-marquee-con{
@@ -113,5 +125,11 @@
 @keyframes marquee{
 	to {
 		transform: translate3d(-50%,0,0);
+	}
+}
+
+@keyframes scroll{
+	to {
+		transform: translate3d(0,-50%,0);
 	}
 }

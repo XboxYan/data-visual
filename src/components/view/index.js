@@ -24,6 +24,7 @@ class View extends PureComponent {
             return false;
         }
         if(this.props.draggable){
+        	ev.dataTransfer.setData('text','');
 			ev.dataTransfer.setDragImage(img,0,0);
 			this.startLeft = this.props.style.left;
 			this.startTop = this.props.style.top;
@@ -40,9 +41,10 @@ class View extends PureComponent {
 		if( this.dragging && this.props.draggable && ev.clientX && ev.clientY){
 			const grid = this.props.grid || 1;
 			const zoom = this.props.zoom || 1;
-            let left = parseInt((this.startLeft + (ev.clientX - this.startX)/zoom)/grid)*grid;
-            let top = parseInt((this.startTop + (ev.clientY - this.startY)/zoom)/grid)*grid;
-            this.view.current.style.transform = `translate( ${parseInt(left)}px,${parseInt(top)}px)`;
+            let left = Math.round((this.startLeft + (ev.clientX - this.startX)/zoom)/grid)*grid;
+            let top = Math.round((this.startTop + (ev.clientY - this.startY)/zoom)/grid)*grid;
+            this.view.current.style.setProperty('--x', Math.round(left));
+            this.view.current.style.setProperty('--y', Math.round(top));
             this.view.current.setAttribute('dragging','');
             this.dragData.left = left;
             this.dragData.top = top;
@@ -63,14 +65,45 @@ class View extends PureComponent {
                 }
             )
             reset.onfinish = () => {
-                this.view.current.removeAttribute('dragging');
-                this.view.current.style.transform = `translate( ${parseInt(left)}px,${parseInt(top)}px)`;
+                this.view.current.style.setProperty('--x', left);
+            	this.view.current.style.setProperty('--y', top);
                 this.dragData.left = left;
             	this.dragData.top = top;
             	this.dragging = false;
                 this.props.onDragEnd &&　this.props.onDragEnd(this.dragData);
+                setTimeout(()=>{
+                	this.view.current.removeAttribute('dragging');
+                },50)
             }
         }
+	}
+
+	keymove = (ev) => {
+		if([37,38,39,40].includes(ev.keyCode)){
+			const left = parseInt(getComputedStyle(this.view.current).getPropertyValue('--x'));
+			const top = parseInt(getComputedStyle(this.view.current).getPropertyValue('--y'));
+			const {grid} = this.props;
+			switch(ev.keyCode){
+				case 38:
+            		this.view.current.style.setProperty('--y', top-grid);
+					this.props.onKeyMove &&　this.props.onKeyMove([left,top-grid]);
+					break;
+				case 39:
+					this.view.current.style.setProperty('--x', left+grid);
+					this.props.onKeyMove &&　this.props.onKeyMove([left+grid,top]);
+					break;
+				case 40:
+					this.view.current.style.setProperty('--y', top+grid);
+					this.props.onKeyMove &&　this.props.onKeyMove([left,top+grid]);
+					break;
+				case 37:
+					this.view.current.style.setProperty('--x', left-grid);
+					this.props.onKeyMove &&　this.props.onKeyMove([left-grid,top]);
+					break;
+				default:
+					break;
+			}
+		}
 	}
 
 	resizestart = (ev) => {
@@ -95,7 +128,7 @@ class View extends PureComponent {
         if(this.resizing && this.props.resizeable){
             ev.stopPropagation();
             window.getSelection().removeAllRanges();
-            const zoom = this.props.zoom || 1;
+            const { style:{ left, top }, props:{lockRatio},grid=1,zoom=1 } = this.props;
             this.offsetX = (ev.pageX - this.startX)/zoom;
             this.offsetY = (ev.pageY - this.startY)/zoom;
             let $width = this.width;
@@ -132,15 +165,23 @@ class View extends PureComponent {
                 default:
                     break;
             }
-            const grid = this.props.grid || 1;
-            const { left, top } = this.props.style;
-            $width = parseInt($width/grid)*grid;
-            $height = parseInt($height/grid)*grid;
-            this.offsetX = parseInt((this.mode.includes('l')?this.offsetX:0)/grid)*grid;
-            this.offsetY = parseInt((this.mode.includes('t')?this.offsetY:0)/grid)*grid;
+
+            if(lockRatio){
+            	if(this.mode==='t'||this.mode==='b'){
+					$width = $height*this.width/this.height;
+            	}else{
+	        		$height = $width*this.height/this.width;
+            	}
+	        }
+            
+            $width = Math.round($width/grid)*grid;
+            $height = Math.round($height/grid)*grid;
+            this.offsetX = Math.round((this.mode.includes('l')?this.offsetX:0)/grid)*grid;
+            this.offsetY = Math.round((this.mode.includes('t')?this.offsetY:0)/grid)*grid;
             this.view.current.style.width = $width + 'px';
             this.view.current.style.height = $height + 'px';
-            this.view.current.style.transform = `translate3d(${left+this.offsetX}px,${top+this.offsetY}px,0)`
+            this.view.current.style.setProperty('--x', left+this.offsetX);
+            this.view.current.style.setProperty('--y', top+this.offsetY);
             this.props.onResize &&　this.props.onResize({
             	offsetX: this.offsetX,
                 offsetY: this.offsetY,
@@ -181,13 +222,14 @@ class View extends PureComponent {
 			<div className={`${styles.view} ${className}`} 
 				data-type="element"
 				data-select={select}
-				style={{transform:`translate3d(${left}px,${top}px,0)`,width,height,'--zoom':zoom}} 
-				//tabIndex="-1"
+				style={{'--x':left,'--y':top,width,height,'--zoom':zoom}} 
+				tabIndex="-1"
 				ref={this.view} 
 				draggable={draggable}
 				onClick={onClick}
 				onDragStart={this.dragstart} 
 				onDrag={this.drag}
+				onKeyDown={this.keymove}
 				onDragEnd={this.dragend}>
 				<div className={styles.view_inner} style={{opacity}}>
 					{children}

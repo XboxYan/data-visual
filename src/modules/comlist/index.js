@@ -24,6 +24,7 @@ const comList = [{
   child: [{
     name: '单张图片',
     icon: 'picture',
+    type: 'Image'
   }, {
     name: '轮播图',
     icon: '',
@@ -34,12 +35,17 @@ const comList = [{
   child: [{
       name: '标题',
       icon: 'font-size',
-      type: 'Text'
+      type: 'Title'
     },
     {
       name: '跑马灯',
       icon: '',
       type: 'Marquee'
+    },
+    {
+      name: '多行文本',
+      icon: '',
+      type: 'MultText'
     },
     {
       name: '时间',
@@ -49,10 +55,10 @@ const comList = [{
 }]
 
 const ComList = () => {
-    const [index,setIndex] = useState(2);
+    const [index,setIndex] = useState(1);
 
     const dragstart = (ev,type) => {
-        ev.dataTransfer.setData('type',type);
+        ev.dataTransfer.setData('type',type||'');
         ev.dataTransfer.setData('offsetX',ev.nativeEvent.offsetX);
         ev.dataTransfer.setData('offsetY',ev.nativeEvent.offsetY);
     }

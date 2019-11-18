@@ -40,9 +40,10 @@
 }
 
 .form-lable{
-	text-align: right;
+	/*text-align: right;*/
 	line-height: 32px;
 	align-self: start;
+	white-space: nowrap;
 }
 
 .form-content .form-number{
@@ -56,6 +57,10 @@
 
 .form-flex{
 	flex: 1;
+}
+
+.ant-input-number.form-flex{
+	width: 0;
 }
 
 .ant-slider.form-slider{

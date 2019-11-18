@@ -1,7 +1,7 @@
 .desk-top{
 	position: absolute;
     background-color: #fff;
-    transform: scale(var(--zoom)) translate3d(calc(1px * var(--x)),calc(1px * var(--y)),0);
+    transform: translate3d(calc(1px * var(--x)),calc(1px * var(--y)),0) scale(var(--zoom));
     /*transform-origin: left top;*/
     transition: .2s;
     outline: calc(1px / var(--zoom)) solid transparent;
@@ -37,7 +37,8 @@
 	transition: 0s;
 }
 
-.desk-top[data-move=true]>[data-type=element]{
+.desk-top[data-move=true]>[data-type=element],
+.desk-top[data-loading=true]>[data-type=element]{
 	pointer-events: none;
 }
 
@@ -48,4 +49,11 @@
 .desk-top[data-move=true]:active{
 	cursor: -webkit-grabbing;
 	cursor: grabbing;
+}
+
+.desk-loading{
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%,-50%);
 }

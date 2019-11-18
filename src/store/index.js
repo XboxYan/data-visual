@@ -11,26 +11,30 @@ const initialConfig = {
 	width:1280,
 	height:720,
 	backgroundColor:'rgba(255,255,255,1)',
-	backgroundImage:tempImg,
+	backgroundImage:'',
 }
 
 const LayoutAdd = (state, action) => {
-	const style = {...action.props.style}
+	const style = action.props.style;
+	const other = action.other||{};
 	style.left = Number(action.position[0].toFixed(0));
 	style.top = Number(action.position[1].toFixed(0));
 	const layout = [...state,{
 		type:action.components,
 		atype:action.props.atype,
-		props:{...action.props.props}||{},
-		style:style,
-		data:{...action.props.data}||{}
+		props:{...action.props.props,...other.props}||{},
+		style:{...style,...other.style},
+		data:{...action.props.data,...other.data}||{}
 	}];
 	return layout;
 }
 
 const LayoutUpdata = (state, action) => {
 	const layout = [...state];
-	Object.assign(layout[action.index][action.path],action.source);
+	const { style,props,data } = action.source;
+	Object.assign(layout[action.index].style,style);
+	Object.assign(layout[action.index].props,props);
+	Object.assign(layout[action.index].data,data);
 	return layout;
 }
 

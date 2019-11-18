@@ -1,4 +1,4 @@
-import React, {useState,Fragment} from 'react';
+import React, {useState,Fragment,useRef,useEffect,useCallback} from 'react';
 import { Button,Dropdown,Icon,Radio } from 'antd';
 import { ChromePicker } from 'react-color';
 import './index.css';
@@ -45,49 +45,98 @@ const ColorPicker = ({color:_color,onChange}) => {
   	)
 }
 
+const useDeg = (ref,onChange) => {
+
+	useEffect(()=>{
+
+		const colorPane = ref.current;
+
+		const {width,height,left,top} = colorPane.getBoundingClientRect();
+
+		let start = false;
+
+		const setDeg = (clientX,clientY,shiftKey) => {
+			const x = clientX-left-width/2;
+			const y = clientY-top-height/2;
+			let deg = Math.atan(y/x)*180/Math.PI;
+			if(x===0){
+				if(y>0){
+					deg = 180;
+				}else{
+					deg = 0;
+				}
+			}else{
+				deg = x>0?deg+90:deg-90
+			}
+			if(shiftKey){
+				deg = Math.round(deg/15)*15;
+			}
+			onChange(deg);
+		}
+
+		const moverstart = (ev) => {
+			start = true;
+		}
+
+		const mousemove = (ev) => {
+			if(start){
+				window.getSelection().removeAllRanges();
+				setDeg(ev.clientX,ev.clientY,ev.shiftKey);
+			}
+		}
+
+		const mouseup = (ev) => {
+			if(start){
+				start = false;
+			}
+		}
+		colorPane.addEventListener('mousedown',moverstart);
+		document.addEventListener('mousemove',mousemove);
+		document.addEventListener('mouseup',mouseup);
+		return ()=>{
+			colorPane.removeEventListener('mousedown',moverstart);
+			document.removeEventListener('mousemove',mousemove);
+			document.removeEventListener('mouseup',mouseup);
+		}
+	},[ref,onChange])
+}
+
 const LinearGradientColorPicker = ({color:_color,onChange}) => {
 
-	const colors = Array.isArray(_color)?_color:[180,_color,_color];
+	const colorPane = useRef(null);
 
-	const picker1 = ()=>Picker(colors[1],(rgba)=>{
-		onChange([colors[0],rgba,colors[2]]);
+	const [deg,color1,color2] = Array.isArray(_color)?_color:[180,_color,_color];
+
+	const picker1 = ()=>Picker(color1,(rgba)=>{
+		onChange([deg,rgba,color2]);
 	});
 
-	const picker2 = ()=>Picker(colors[2],(rgba)=>{
-		onChange([colors[0],colors[1],rgba]);
+	const picker2 = ()=>Picker(color2,(rgba)=>{
+		onChange([deg,color1,rgba]);
 	})
 
-	const dragstart = (ev) => {
-		const {width,height,left,top} = ev.target.getBoundingClientRect();
-		const x = ev.clientX-left-width/2;
-		const y = ev.clientY-top-height/2;
-		let deg = Math.atan(y/x)*180/Math.PI;
-		if(x==0){
-			if(y>0){
-				deg = 180;
-			}else{
-				deg = 0;
-			}
-		}else{
-			deg = x>0?deg+90:deg-90
-		}
-		onChange([deg,colors[1],colors[2]]);
-	}
+	const changeColor = useCallback((_deg)=>{
+
+		onChange([_deg,color1,color2]);
+
+	},[color1,color2])
+
+	useDeg(colorPane,changeColor);
 
 	return (
 		<Fragment>
 	  		<Button.Group className="color-input">
 		    	<Dropdown overlay={picker1} trigger={['click']} placement="bottomRight">
-				    <Button className="color-btn" style={{backgroundColor:colors[1],paddingRight:5}}></Button>
+				    <Button className="color-btn" style={{backgroundColor:color1,paddingRight:5}}></Button>
 				</Dropdown>
 				<Dropdown overlay={picker2} trigger={['click']} placement="bottomRight">
-				    <Button className="color-btn" style={{backgroundColor:colors[2],paddingRight:5}}></Button>
+				    <Button className="color-btn" style={{backgroundColor:color2,paddingRight:5}}></Button>
 				</Dropdown>
 			</Button.Group>
 			<div 
+				ref={colorPane}
 				className="color-preview"  
-				style={{'--deg':colors[0],backgroundImage:`linear-gradient(${colors[0]}deg, ${colors[1]}, ${colors[2]})`}}
-				onMouseDown={dragstart}
+				style={{'--deg':deg,backgroundImage:`linear-gradient(${deg}deg, ${color1}, ${color2})`}}
 			>
 			</div>
 		</Fragment>

@@ -3,6 +3,7 @@
 	/*background-color: #fff;*/
     outline:calc(1px / var(--zoom)) dashed transparent;
     outline-offset: calc(-1px / var(--zoom));
+    transform: translate3d(calc(var(--x) * 1px),calc(var(--y) * 1px),0);
     transition: .2s;
 }
 .view:hover,.view:active{
@@ -32,6 +33,7 @@
     opacity: .1;
 }
 .view[dragging]{
+    transition: 0s;
 	pointer-events: none;
     z-index: 10!important;
 }

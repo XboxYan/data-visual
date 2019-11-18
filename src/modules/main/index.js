@@ -1,18 +1,22 @@
 import React, { useContext,useState,useEffect,useRef } from 'react';
+import { Spin, message } from 'antd';
 import './index.css';
-import Text from '../../components/text';
+import { Title,Marquee,MultText } from '../../components/text';
+import Img from '../../components/image';
 import { LayoutContext } from '../../store';
-import { defaultprops } from '../../store/defaultprops';
 
+let timer = null;
 
 const MapView = {
-	'Text':Text,
-	'Marquee':Text
+	'Title':Title,
+	'Marquee':Marquee,
+	'MultText':MultText,
+	'Image':Img
 }
 
 
 
-const useMove = (ref,zoom) => {
+const useMove = (ref) => {
 	const [ move,setMove ] = useState(false);
 	const [ pos,setPos ] = useState([0,0]);
 	useEffect(()=>{
@@ -23,7 +27,7 @@ const useMove = (ref,zoom) => {
 		let moverun = false;
 		const moveruning = (ev)=>{
 			if(moverun){
-				setPos([posStart[0]+(ev.clientX-start[0])/zoom,posStart[1]+(ev.clientY-start[1])/zoom]);
+				setPos([posStart[0]+(ev.clientX-start[0])/1,posStart[1]+(ev.clientY-start[1])/1]);
 			}
 		}
 		
@@ -83,7 +87,7 @@ const useMove = (ref,zoom) => {
 			document.removeEventListener('mousemove',moveruning)
 			document.removeEventListener('mouseup',moverunend)
 		}
-	},[ref,zoom])
+	},[ref])
 	return {move,pos}
 }
 
@@ -93,6 +97,8 @@ const Main = () => {
 
 	const { layout, dispatch, config, setConfig, focusIndex, setFocusIndex } = useContext(LayoutContext);
 
+	const [loading,setLoading] = useState(false);
+
 	const dragstart = (target,i) => {
 		dragData = target;
 		dragData.index = i;
@@ -100,7 +106,7 @@ const Main = () => {
 
 	const desk = useRef(null);
 
-	const {move,pos} = useMove(desk,config.zoom);
+	const {move,pos} = useMove(desk);
 
 	const dragover = (ev) => {
 		ev.preventDefault();
@@ -108,32 +114,78 @@ const Main = () => {
 
 	const drop = (ev) => {
 		ev.preventDefault();
-		if(ev.dataTransfer.getData('type')){
-			const type = ev.dataTransfer.getData('type');
+		if(loading){
+			message.warning('正在处理，请稍后...');
+		}
+		const type = ev.dataTransfer.getData('type');
+		if(type){
 			const target = ev.target.closest('.desk-top');
 			const { left, top } = target.getBoundingClientRect();
 			const offsetX = ev.dataTransfer.getData('offsetX');
 			const offsetY = ev.dataTransfer.getData('offsetY');
 			dispatch({
 				type:'ADD',
-				props: defaultprops[type],
+				props: MapView[type].defaultProps,
 				position: [(ev.clientX-left-offsetX)/config.zoom,(ev.clientY-top-offsetY)/config.zoom],
 				components: type
 			})
 			setFocusIndex([layout.length]);
-			ev.dataTransfer.clearData();
+			//ev.dataTransfer.clearData();
 		}
 		if(ev.dataTransfer.files[0]){
-			console.log(ev.dataTransfer.files[0])
+
+			const [file] = ev.dataTransfer.files;
+			if(!file){
+				return false;
+			}
+			if(!file.type.includes('image')){
+				message.error('所选文件不是图片类型');
+				return false;
+			}
+			if(file.size>1024*1024*2){
+				message.error('选择图片过大，不能超过2M');
+				return false;
+			}
+			setLoading(true);
+			const x = ev.clientX;
+			const y = ev.clientY;
+			const target = ev.target.closest('.desk-top');
+			const { left, top } = target.getBoundingClientRect();
+			const reader = new FileReader();
+		    reader.readAsDataURL(file);
+		    reader.addEventListener('load', () => {
+		    	const image = new Image()
+	         	image.src = reader.result;
+	         	image.onload = () => {
+					dispatch({
+						type:'ADD',
+						props: MapView['Image'].defaultProps,
+						position: [(x-left-image.width/2)/config.zoom,(y-top-image.height/2)/config.zoom],
+						components: 'Image',
+						other:{
+							style:{
+								width: image.width,
+								height: image.height
+							},
+							data:{
+								src: reader.result,
+								tempSrc: URL.createObjectURL(file)
+							}
+						}
+					})
+			    	setLoading(false);
+	         	}
+		    });
 		}
 		if(dragData){
 			dispatch({
 				type:'UPDATA',
-				source: {
-					left: dragData.left,
-					top: dragData.top,
+				source:{
+					style:{
+						left: dragData.left,
+						top: dragData.top,
+					}
 				},
-				path:'style',
 				index:dragData.index
 			})
 		}
@@ -143,20 +195,38 @@ const Main = () => {
 		dragData = null;
 	}
 
+	const keymove = (data,i) => {
+		const [_x,_y] = data;
+		timer && clearTimeout(timer);
+        timer = setTimeout(()=>{
+            dispatch({
+				type:'UPDATA',
+				source:{
+					style:{
+						left: _x,
+						top: _y,
+					}
+				},
+				index:i
+			})
+        },100);
+	}
+
 	const resize = (data) => {
 		
 	}
 
 	const resizeend = (data,i,left,top) => {
-		dispatch({
+        dispatch({
 			type:'UPDATA',
-			source: {
-				left: left + data.offsetX,
-				top: top + data.offsetY,
-				width: data.width,
-				height: data.height,
+			source:{
+				style:{
+					left: left + data.offsetX,
+					top: top + data.offsetY,
+					width: data.width,
+					height: data.height,
+				}
 			},
-			path:'style',
 			index:i
 		})
 	}
@@ -176,17 +246,16 @@ const Main = () => {
 	const select = (ev,i) => {
 		ev.stopPropagation();
 		if(!move){
-			if(!focusIndex.includes(i)){
+			if(!focusIndex.includes(i) && focusIndex[0]!==i){
 				setFocusIndex([i]);
 			}
 		}
 	}
 
-	const onChange = (data,path,index) => {
+	const onChange = (data,index) => {
 		dispatch({
 			type:'UPDATA',
 			source: data,
-			path:path,
 			index:index
 		})
 	}
@@ -200,11 +269,8 @@ const Main = () => {
 			onWheel={zoom}
 			id="desk-top"
 			ref={desk}
-			//onMouseDown={moverunstart}
 			onClick={(ev)=>select(ev,-1)} 
 			data-select={focusIndex.includes(-1)} 
-			//onKeyDown={movestart} 
-			//onKeyUp={moveend} 
 			tabIndex={-2}
 			style={{
 				width:config.width,
@@ -234,15 +300,17 @@ const Main = () => {
 							props={el.props}
 							data={el.data}
 							select={focusIndex.includes(i)}
-							onChange={(data,path)=>onChange(data,path,i)}
+							onChange={(data)=>onChange(data,i)}
 							onClick={(ev)=>select(ev,i)}
 							onDragStart={(dragData)=>dragstart(dragData,i)} 
-							onDragEnd={dragend} 
+							onDragEnd={dragend}
+							onKeyMove={(data)=>keymove(data,i)}
 							onResize={resize}  
 							onResizeEnd={(resizeData)=>resizeend(resizeData,i,left,top)} />
 					)
 				})
 			}
+			<Spin spinning={loading} className="desk-loading"/>
 		</div>
 	)
 }
