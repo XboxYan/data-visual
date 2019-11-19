@@ -22,7 +22,7 @@ const defaultProps = {
 	},
 }
 
-const Img = (props) => {
+const Img = React.memo((props) => {
 
 	const { data: {src='',tempSrc} } = props;
 
@@ -72,6 +72,14 @@ const Img = (props) => {
     	input.current.click();
     }
 
+    const action = [
+    	{
+    		icon:'upload',
+    		onClick:upload,
+    		tips:'选择图片'
+    	}
+    ]
+
    	useEffect(()=>{
 		if(isBase64&&props.src&&!props.tempSrc){
 			setLoading(true);
@@ -83,15 +91,14 @@ const Img = (props) => {
 	},[props,isBase64])
 
   	return (
-    	<View className="image-view" {...props}>
+    	<View className="image-view" {...props} action={action}>
     		<div className="image-inner" onDoubleClick={upload} style={{backgroundImage:`url(${tempSrc||src})`}}>
     			<Icon className="image-place" data-show={!src} type={loading?"loading":"picture"} />
-    			<Icon className="image-upload" type="upload" onClick={upload}/>
     		</div>
     		<input ref={input} onChange={imgload} className="image-input" type="file" accept="image/png, image/jpeg" />
 		</View>
   	)
-}
+})
 
 Img.defaultProps = defaultProps.Image;
 

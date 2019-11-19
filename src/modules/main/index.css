@@ -57,3 +57,8 @@
 	top: 50%;
 	transform: translate(-50%,-50%);
 }
+
+.desk-paste{
+	position: absolute;
+	clip: rect(0,0,0,0);
+}

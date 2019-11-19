@@ -112,4 +112,4 @@ const ImgUpload = (props) => {
   	)
 }
 
-export default ImgUpload;
+export default React.memo(ImgUpload);

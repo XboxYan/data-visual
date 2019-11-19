@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Icon } from 'antd';
 import View from '../view';
 import './index.css';
 
@@ -63,7 +62,7 @@ const defaultProps = {
 	},
 }
 
-const Text = (props) => {
+const Text = React.memo((props) => {
 
 	let timer = null;
 
@@ -84,7 +83,7 @@ const Text = (props) => {
 		},300);
     }
 
-    const blur = () => {
+    const save = () => {
     	setEdit(false);
     }
 
@@ -100,9 +99,9 @@ const Text = (props) => {
     },[text]);
 
   	return (
-    	<View className="text-view" {...props} draggable={!isEdit}>
+    	<View className="text-view" {...props} draggable={!isEdit} action={[{icon:isEdit?'save':'edit',onClick:isEdit?null:edit,tips:isEdit?'保存':'编辑'}]}>
     		<div className="text-inner" data-edit={isEdit} onDoubleClick={edit}>
-    			<textarea ref={input} className="text-input" onChange={change} onBlur={blur} value={value}/>
+    			<textarea ref={input} className="text-input" onChange={change} onBlur={save} value={value}/>
     			<div className="text-display" data-italic={fontItalic} style={{
     				color,
     				fontSize,
@@ -112,14 +111,13 @@ const Text = (props) => {
     				{
     					props.children
     				}
-	    			<Icon className="text-edit" type="edit" onClick={edit}/>
     			</div>
     		</div>
 		</View>
   	)
-}
+})
 
-const Marquee = (props) => {
+const Marquee = React.memo((props) => {
 
 	const marqueeEl = useRef(null);
 
@@ -139,11 +137,11 @@ const Marquee = (props) => {
 			</div>
 		</Text>
 	)
-}
+})
 
 Marquee.defaultProps = defaultProps.Marquee;
 
-const Title = (props) => {
+const Title = React.memo((props) => {
 
 	const { style, data: {text} } = props;
 
@@ -154,11 +152,11 @@ const Title = (props) => {
 			</div>
 		</Text>
 	)
-}
+})
 
 Title.defaultProps = defaultProps.Title;
 
-const MultText = (props) => {
+const MultText = React.memo((props) => {
 
 	const multEl = useRef(null);
 
@@ -181,7 +179,7 @@ const MultText = (props) => {
 			</div>
 		</Text>
 	)
-}
+})
 
 MultText.defaultProps = defaultProps.MultText;
 

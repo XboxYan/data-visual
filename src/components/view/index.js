@@ -1,4 +1,5 @@
 import React,{ PureComponent } from 'react';
+import { Icon,Tooltip } from 'antd';
 import styles from './index.module.css';
 
 const img = new Image();
@@ -79,7 +80,7 @@ class View extends PureComponent {
 	}
 
 	keymove = (ev) => {
-		if([37,38,39,40].includes(ev.keyCode)){
+		if(this.props.draggable && [37,38,39,40].includes(ev.keyCode)){
 			const left = parseInt(getComputedStyle(this.view.current).getPropertyValue('--x'));
 			const top = parseInt(getComputedStyle(this.view.current).getPropertyValue('--y'));
 			const {grid} = this.props;
@@ -104,6 +105,29 @@ class View extends PureComponent {
 					break;
 			}
 		}
+		if(ev.keyCode === 46 && ev.target.tagName!=='TEXTAREA'){
+			this.onDelete();
+		}
+	}
+
+	onDelete = () => {
+		const { left, top } = this.props.style;
+		const reset = this.view.current.animate(
+            [
+                { 
+                	transform: `translate3d( ${left}px ,${top}px,0) scale(0.5)`,
+                	opacity:0
+                }
+            ],
+            {
+                duration: 200,
+                easing:"ease-in-out",
+                fill:"forwards"
+            }
+        )
+        reset.onfinish = () => {
+            this.props.onDelete &&　this.props.onDelete();
+        }
 	}
 
 	resizestart = (ev) => {
@@ -166,6 +190,9 @@ class View extends PureComponent {
                     break;
             }
 
+            $width = Math.round($width/grid)*grid;
+            $height = Math.round($height/grid)*grid;
+
             if(lockRatio){
             	if(this.mode==='t'||this.mode==='b'){
 					$width = $height*this.width/this.height;
@@ -174,8 +201,7 @@ class View extends PureComponent {
             	}
 	        }
             
-            $width = Math.round($width/grid)*grid;
-            $height = Math.round($height/grid)*grid;
+            
             this.offsetX = Math.round((this.mode.includes('l')?this.offsetX:0)/grid)*grid;
             this.offsetY = Math.round((this.mode.includes('t')?this.offsetY:0)/grid)*grid;
             this.view.current.style.width = $width + 'px';
@@ -216,7 +242,7 @@ class View extends PureComponent {
     }
 
 	render(){
-		const { className='',style:{left, top, width, height, opacity}, resizeable, draggable, children, zoom, select, onClick } = this.props;
+		const { className='',style:{left, top, width, height, opacity}, resizeable, draggable, children, zoom, select, onClick, onBlur, action=[] } = this.props;
 
 		return (
 			<div className={`${styles.view} ${className}`} 
@@ -229,6 +255,7 @@ class View extends PureComponent {
 				onClick={onClick}
 				onDragStart={this.dragstart} 
 				onDrag={this.drag}
+				onBlur={onBlur}
 				onKeyDown={this.keymove}
 				onDragEnd={this.dragend}>
 				<div className={styles.view_inner} style={{opacity}}>
@@ -249,6 +276,12 @@ class View extends PureComponent {
 					:
 					null
 				}
+				<div className={styles.actions}>
+					<Tooltip placement="right" title="删除"><Icon className={`${styles.action_btn} ${styles.action_del}`} type="close" onClick={this.onDelete} /></Tooltip>
+					{
+						action.map((el,i)=>(<Tooltip key={i} placement="right" title={el.tips}><Icon className={styles.action_btn} type={el.icon} onClick={el.onClick} /></Tooltip>))
+					}
+				</div>
 			</div>
 		)
 	}

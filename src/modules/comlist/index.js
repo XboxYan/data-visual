@@ -90,4 +90,4 @@ const ComList = () => {
     </div>
 }
 
-export default ComList;
+export default React.memo(ComList);

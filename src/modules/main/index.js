@@ -64,7 +64,7 @@ const useMove = (ref) => {
 		}
 
 		const wheelmove = (ev) => {
-			if(!ev.altKey){
+			if(!ev.altKey && ev.target.tagName!=='TEXTAREA'){
 				const dir = ev.deltaY > 0 ? -50:50;
 				if(ev.shiftKey){
 					setPos(v=>[v[0]+dir,v[1]]);
@@ -99,6 +99,8 @@ const Main = () => {
 
 	const [loading,setLoading] = useState(false);
 
+	const [lay,setLay] = useState([0,0]);
+
 	const dragstart = (target,i) => {
 		dragData = target;
 		dragData.index = i;
@@ -112,15 +114,82 @@ const Main = () => {
 		ev.preventDefault();
 	}
 
+	const addImg = (file,[x,y]) => {
+		if(!file){
+			return false;
+		}
+		if(!file.type.includes('image')){
+			message.error('所选文件不是图片类型');
+			return false;
+		}
+		if(file.size>1024*1024*2){
+			message.error('选择图片过大，不能超过2M');
+			return false;
+		}
+		setLoading(true);
+		const reader = new FileReader();
+	    reader.readAsDataURL(file);
+	    reader.addEventListener('load', () => {
+	    	const image = new Image()
+         	image.src = reader.result;
+         	image.onload = () => {
+				dispatch({
+					type:'ADD',
+					props: MapView['Image'].defaultProps,
+					position: [(x-image.width/2)/config.zoom,(y-image.height/2)/config.zoom],
+					components: 'Image',
+					other:{
+						style:{
+							width: image.width,
+							height: image.height
+						},
+						data:{
+							src: reader.result,
+							tempSrc: URL.createObjectURL(file)
+						}
+					}
+				})
+		    	setLoading(false);
+         	}
+	    });
+	}
+
+	const addText = (text,[x,y]) => {
+		let type = 'Title';
+		if(text.includes('\n')||text.length>100){
+			type = 'MultText';
+		}
+		const {width,height} = MapView[type].defaultProps.style;
+		dispatch({
+			type:'ADD',
+			props: MapView[type].defaultProps,
+			position: [(x-width/2)/config.zoom,(y-height/2)/config.zoom],
+			components: type,
+			other:{
+				data:{
+					text: text,
+				}
+			}
+		})
+		setFocusIndex([layout.length]);
+	}
+
 	const drop = (ev) => {
 		ev.preventDefault();
 		if(loading){
 			message.warning('正在处理，请稍后...');
 		}
+		const target = ev.target.closest('.desk-top');
+		const { left, top } = target.getBoundingClientRect();
+		const text = ev.dataTransfer.getData('text');
+		if(text){
+			//添加文本
+			addText(text,[ev.clientX-left,ev.clientY-top])
+			return false;
+		}
 		const type = ev.dataTransfer.getData('type');
 		if(type){
-			const target = ev.target.closest('.desk-top');
-			const { left, top } = target.getBoundingClientRect();
+			//添加组件
 			const offsetX = ev.dataTransfer.getData('offsetX');
 			const offsetY = ev.dataTransfer.getData('offsetY');
 			dispatch({
@@ -130,54 +199,16 @@ const Main = () => {
 				components: type
 			})
 			setFocusIndex([layout.length]);
+			return false;
 			//ev.dataTransfer.clearData();
 		}
 		if(ev.dataTransfer.files[0]){
-
-			const [file] = ev.dataTransfer.files;
-			if(!file){
-				return false;
-			}
-			if(!file.type.includes('image')){
-				message.error('所选文件不是图片类型');
-				return false;
-			}
-			if(file.size>1024*1024*2){
-				message.error('选择图片过大，不能超过2M');
-				return false;
-			}
-			setLoading(true);
-			const x = ev.clientX;
-			const y = ev.clientY;
-			const target = ev.target.closest('.desk-top');
-			const { left, top } = target.getBoundingClientRect();
-			const reader = new FileReader();
-		    reader.readAsDataURL(file);
-		    reader.addEventListener('load', () => {
-		    	const image = new Image()
-	         	image.src = reader.result;
-	         	image.onload = () => {
-					dispatch({
-						type:'ADD',
-						props: MapView['Image'].defaultProps,
-						position: [(x-left-image.width/2)/config.zoom,(y-top-image.height/2)/config.zoom],
-						components: 'Image',
-						other:{
-							style:{
-								width: image.width,
-								height: image.height
-							},
-							data:{
-								src: reader.result,
-								tempSrc: URL.createObjectURL(file)
-							}
-						}
-					})
-			    	setLoading(false);
-	         	}
-		    });
+			//添加图片
+			addImg(ev.dataTransfer.files[0],[ev.clientX-left,ev.clientY-top]);
+			return false;
 		}
 		if(dragData){
+			//移动组件
 			dispatch({
 				type:'UPDATA',
 				source:{
@@ -188,6 +219,28 @@ const Main = () => {
 				},
 				index:dragData.index
 			})
+		}
+	}
+
+	const paste = (ev) => {
+		var items = ev.clipboardData.items || [];
+		for (var i = 0; i < items.length; i += 1) {
+		    var kind = items[i].kind;
+		    var type = items[i].type;
+		    // 逻辑开始
+		    if (kind == 'string') {
+		      if (type.indexOf('text/plain') != -1) {
+		        items[i].getAsString(function (str) {
+		          addText(str,lay);
+		        });   
+		      }
+		    } else if (kind == 'file') {
+		      // 如果是图片
+		      if (type.indexOf('image/') != -1) {
+		        var file = items[i].getAsFile();
+		        addImg(file,lay);
+		      }
+		    }
 		}
 	}
 
@@ -241,7 +294,12 @@ const Main = () => {
 		}
 	}
 
-	
+	const clickdesk = (ev) => {
+		const target = ev.target.closest('.desk-top');
+		const { left, top } = target.getBoundingClientRect();
+		setLay([ev.clientX-left,ev.clientY-top]);
+		select(ev,-1);
+	}
 
 	const select = (ev,i) => {
 		ev.stopPropagation();
@@ -250,6 +308,14 @@ const Main = () => {
 				setFocusIndex([i]);
 			}
 		}
+	}
+
+	const del = (i) => {
+		dispatch({
+			type:'DELETE',
+			index:i
+		})
+		setFocusIndex([-1]);
 	}
 
 	const onChange = (data,index) => {
@@ -269,9 +335,9 @@ const Main = () => {
 			onWheel={zoom}
 			id="desk-top"
 			ref={desk}
-			onClick={(ev)=>select(ev,-1)} 
+			onClick={clickdesk} 
 			data-select={focusIndex.includes(-1)} 
-			tabIndex={-2}
+			tabIndex={1}
 			style={{
 				width:config.width,
 				height:config.height,
@@ -285,29 +351,35 @@ const Main = () => {
 			onDragOver={dragover} 
 			onDrop={drop}
 		>
+			<input onPaste={paste} className="desk-paste" />
 			{
 				layout.map((el,i)=>{
-					const { left, top} = el.style;
-					const View = MapView[el.type];
-					return (
-						<View 
-							key={i} 
-							draggable={true} 
-							resizeable={true}
-							grid={config.grid}
-							zoom={config.zoom}
-							style={el.style}
-							props={el.props}
-							data={el.data}
-							select={focusIndex.includes(i)}
-							onChange={(data)=>onChange(data,i)}
-							onClick={(ev)=>select(ev,i)}
-							onDragStart={(dragData)=>dragstart(dragData,i)} 
-							onDragEnd={dragend}
-							onKeyMove={(data)=>keymove(data,i)}
-							onResize={resize}  
-							onResizeEnd={(resizeData)=>resizeend(resizeData,i,left,top)} />
-					)
+					if(el){
+						const { left, top} = el.style;
+						const View = MapView[el.type];
+						return (
+							<View 
+								key={i} 
+								draggable={true} 
+								resizeable={true}
+								grid={config.grid}
+								zoom={config.zoom}
+								style={el.style}
+								props={el.props}
+								data={el.data}
+								select={focusIndex.includes(i)}
+								onChange={(data)=>onChange(data,i)}
+								onClick={(ev)=>select(ev,i)}
+								onDelete={()=>del(i)}
+								onDragStart={(dragData)=>dragstart(dragData,i)} 
+								onDragEnd={dragend}
+								onKeyMove={(data)=>keymove(data,i)}
+								onResize={resize}  
+								onResizeEnd={(resizeData)=>resizeend(resizeData,i,left,top)} />
+						)
+					}else{
+						return null;
+					}
 				})
 			}
 			<Spin spinning={loading} className="desk-loading"/>
@@ -315,4 +387,4 @@ const Main = () => {
 	)
 }
 
-export default Main;
+export default React.memo(Main);

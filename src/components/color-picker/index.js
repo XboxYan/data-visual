@@ -28,7 +28,7 @@ const fontColor = (color) => {
 }
 
 
-const ColorPicker = ({color:_color,onChange}) => {
+const ColorPicker = React.memo(({color:_color,onChange}) => {
 
 
 	const color = Array.isArray(_color)?_color[1]:_color;
@@ -43,7 +43,7 @@ const ColorPicker = ({color:_color,onChange}) => {
 			<Icon className="color-clear" hidden={!color} type="close-circle" theme="filled" onClick={()=>onChange('')} />
 		</div>
   	)
-}
+})
 
 const useDeg = (ref,onChange) => {
 
@@ -101,7 +101,7 @@ const useDeg = (ref,onChange) => {
 	},[ref,onChange])
 }
 
-const LinearGradientColorPicker = ({color:_color,onChange}) => {
+const LinearGradientColorPicker = React.memo(({color:_color,onChange}) => {
 
 	const colorPane = useRef(null);
 
@@ -142,9 +142,9 @@ const LinearGradientColorPicker = ({color:_color,onChange}) => {
 		</Fragment>
   	)
 
-}
+})
 
-export const BackgroundColorPicker = ({color,onChange}) => {
+export const BackgroundColorPicker = React.memo(({color,onChange}) => {
 
 	const [type,setType] = useState(Array.isArray(color)?'gradient':'single');
 
@@ -166,6 +166,6 @@ export const BackgroundColorPicker = ({color,onChange}) => {
 		    }
   		</div>
 	)
-}
+})
 
 export default ColorPicker;

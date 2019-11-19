@@ -7,4 +7,4 @@ const Header = () => (
 	</React.Fragment>
 )
 
-export default Header;
+export default React.memo(Header);

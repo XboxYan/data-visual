@@ -9,22 +9,6 @@
 	background-repeat: no-repeat;
 	background-position: center;
 }
-.image-upload{
-	font-size: 16px;
-	cursor: pointer;
-	color: var(--theme-color);
-	visibility: hidden;
-	opacity: 0;
-	transition: .2s;
-	pointer-events: all;
-	position: absolute;
-	right: .5em;
-	bottom: .5em;
-}
-.image-inner:hover .image-upload{
-	visibility: visible;
-	opacity: 1;
-}
 .image-place{
 	margin: auto;
 	font-size: 30px;

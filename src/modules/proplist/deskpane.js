@@ -77,4 +77,4 @@ const DeskPane = () => {
     )
 }
 
-export default DeskPane;
+export default React.memo(DeskPane);

@@ -7,9 +7,9 @@ import { LayoutContext } from '../../store';
 const { TabPane } = Tabs;
 
 const PropList = () => {
-	const { focusIndex } = useContext(LayoutContext);
+	const { layout, focusIndex } = useContext(LayoutContext);
 	if(focusIndex.length===1){
-		const isDesk = focusIndex[0]===-1;
+		const isDesk = focusIndex[0]===-1 || !layout[focusIndex];
 		return (
 			<Tabs defaultActiveKey="1">
 			    <TabPane tab={isDesk?"页面设置":"属性"} key="1">
@@ -32,4 +32,4 @@ const PropList = () => {
 	)
 }
 
-export default PropList;
+export default React.memo(PropList);

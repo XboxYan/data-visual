@@ -38,12 +38,20 @@ const LayoutUpdata = (state, action) => {
 	return layout;
 }
 
+const LayoutDelete = (state, action) => {
+	const layout = [...state];
+	layout.splice(action.index,1,null);
+	return layout;
+}
+
 const reducer = (state, action) => {
   switch (action.type) {
     case 'ADD':
       return LayoutAdd(state, action);
     case 'UPDATA':
       return LayoutUpdata(state, action);
+    case 'DELETE':
+      return LayoutDelete(state, action);
     default:
       throw new Error();
   }

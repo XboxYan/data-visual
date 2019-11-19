@@ -1,8 +1,7 @@
 import React, { useContext, useState, useEffect, Fragment } from 'react';
-import { Input,InputNumber,Slider,Icon,Divider,Radio,Switch,Checkbox } from 'antd';
+import { Input,InputNumber,Slider,Divider,Radio,Switch,Checkbox } from 'antd';
 import { LayoutContext } from '../../store';
 import ColorPicker from '../../components/color-picker';
-import ImgUpload from '../../components/img-upload';
 
 const InputGroup = Input.Group;
 
@@ -39,7 +38,7 @@ const PropsPane = () => {
     return (
         <div className="form-content">
             <Divider className="form-title" orientation="left">通用</Divider>
-            <label className="form-lable">元素尺寸</label>
+            <label className="form-lable">尺寸</label>
             <div className="form-item">
                 <InputGroup compact>
                     <InputNumber className="form-flex form-input"
@@ -56,7 +55,7 @@ const PropsPane = () => {
                     />
                 </InputGroup>
             </div>
-            <label className="form-lable">元素位置</label>
+            <label className="form-lable">坐标</label>
             <div className="form-item">
                 <InputGroup compact>
                     <InputNumber className="form-flex form-input"
@@ -191,4 +190,4 @@ const PropsPane = () => {
     )
 }
 
-export default PropsPane;
+export default React.memo(PropsPane);
