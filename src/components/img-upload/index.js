@@ -1,6 +1,5 @@
-import React, { useRef,useState,useEffect } from 'react';
+import React, { useRef,useState } from 'react';
 import { Button, Icon, message, Radio, Input } from 'antd';
-import { base64ToBlob } from '../../util';
 
 import './index.css';
 
@@ -9,8 +8,10 @@ let timer = null;
 const ImgUpload = (props) => {
 
 	//https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png
+	
+	const { url, tempUrl, onChange } = props;
 
-	const isBase64 = props.url.includes('base64')||!props.url;
+	const isBase64 = url.includes('base64')||!url;
 
 	const [loading,setLoading] = useState(false);
 
@@ -54,8 +55,7 @@ const ImgUpload = (props) => {
 	    reader.readAsDataURL(file);
 	    reader.addEventListener('load', () => {
 	    	setLoading(false);
-			URL.revokeObjectURL(props.tempUrl);
-			props.onChange && props.onChange(reader.result,URL.createObjectURL(file));
+			onChange(reader.result,URL.createObjectURL(file));
 	    });
 	}
 
@@ -63,30 +63,20 @@ const ImgUpload = (props) => {
 		const value = ev.target.value;
 		timer && clearTimeout(timer);
 		timer = setTimeout(()=>{
-			props.onChange && props.onChange(value);
+			onChange(value);
 		},300);
 	}
 
 	const deleteImg = () => {
 		uploadInput.current.value = "";
 		props.onChange && props.onChange('');
-		URL.revokeObjectURL(props.tempUrl);
 	}
 
 	const modelselect = (ev) => {
 		setType(ev.target.value);
 	}
 
-	useEffect(()=>{
-		if(isBase64&&props.url&&!props.tempUrl){
-			setLoading(true);
-			base64ToBlob({b64data: props.url.split(',')[1], contentType: 'image/png'}).then(res => {
-				setLoading(false);
-			  	props.onChange && props.onChange(props.url,res.preview);
-			})
-		}
-	},[props,isBase64])
-
+	
 
   	return (
   		<div className="upload-content">
@@ -100,13 +90,13 @@ const ImgUpload = (props) => {
 		  			<input ref={uploadInput} id="img-upload" className="upload-input" type="file" accept="image/png, image/jpeg" onChange={upload}/>
 		  			<Icon className="upload-icon" type={loading?"loading":"picture"} />
 		  			<div>{loading?"加载中":"点击或拖拽"}</div>
-		  			<div className="upload-preview" data-show={!!props.url} style={{backgroundImage:`url(${props.tempUrl||props.url}),url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxwYXRoIGZpbGw9InJnYmEoMCwgMCwgMCwgMC42NSkiIGQ9Ik04MzIuNiAxOTEuNGMtODQuNi04NC42LTIyMS41LTg0LjYtMzA2IDBsLTk2LjkgOTYuOSA1MSA1MSA5Ni45LTk2LjljNTMuOC01My44IDE0NC42LTU5LjUgMjA0IDAgNTkuNSA1OS41IDUzLjggMTUwLjIgMCAyMDRsLTk2LjkgOTYuOSA1MS4xIDUxLjEgOTYuOS05Ni45Yzg0LjQtODQuNiA4NC40LTIyMS41LTAuMS0zMDYuMXpNNDQ2LjUgNzgxLjZjLTUzLjggNTMuOC0xNDQuNiA1OS41LTIwNCAwLTU5LjUtNTkuNS01My44LTE1MC4yIDAtMjA0bDk2LjktOTYuOS01MS4xLTUxLjEtOTYuOSA5Ni45Yy04NC42IDg0LjYtODQuNiAyMjEuNSAwIDMwNnMyMjEuNSA4NC42IDMwNiAwbDk2LjktOTYuOS01MS01MS05Ni44IDk3ek0yNjAuMyAyMDkuNGMtMy4xLTMuMS04LjItMy4xLTExLjMgMEwyMDkuNCAyNDljLTMuMSAzLjEtMy4xIDguMiAwIDExLjNsNTU0LjQgNTU0LjRjMy4xIDMuMSA4LjIgMy4xIDExLjMgMGwzOS42LTM5LjZjMy4xLTMuMSAzLjEtOC4yIDAtMTEuM0wyNjAuMyAyMDkuNHoiPjwvcGF0aD48L3N2Zz4=")`}}>
+		  			<div className="upload-preview" data-show={!!props.url} style={{backgroundImage:`url(${tempUrl||url}),url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxwYXRoIGZpbGw9InJnYmEoMCwgMCwgMCwgMC42NSkiIGQ9Ik04MzIuNiAxOTEuNGMtODQuNi04NC42LTIyMS41LTg0LjYtMzA2IDBsLTk2LjkgOTYuOSA1MSA1MSA5Ni45LTk2LjljNTMuOC01My44IDE0NC42LTU5LjUgMjA0IDAgNTkuNSA1OS41IDUzLjggMTUwLjIgMCAyMDRsLTk2LjkgOTYuOSA1MS4xIDUxLjEgOTYuOS05Ni45Yzg0LjQtODQuNiA4NC40LTIyMS41LTAuMS0zMDYuMXpNNDQ2LjUgNzgxLjZjLTUzLjggNTMuOC0xNDQuNiA1OS41LTIwNCAwLTU5LjUtNTkuNS01My44LTE1MC4yIDAtMjA0bDk2LjktOTYuOS01MS4xLTUxLjEtOTYuOSA5Ni45Yy04NC42IDg0LjYtODQuNiAyMjEuNSAwIDMwNnMyMjEuNSA4NC42IDMwNiAwbDk2LjktOTYuOS01MS01MS05Ni44IDk3ek0yNjAuMyAyMDkuNGMtMy4xLTMuMS04LjItMy4xLTExLjMgMEwyMDkuNCAyNDljLTMuMSAzLjEtMy4xIDguMiAwIDExLjNsNTU0LjQgNTU0LjRjMy4xIDMuMSA4LjIgMy4xIDExLjMgMGwzOS42LTM5LjZjMy4xLTMuMSAzLjEtOC4yIDAtMTEuM0wyNjAuMyAyMDkuNHoiPjwvcGF0aD48L3N2Zz4=")`}}>
 		  				<label htmlFor="img-upload"><Icon title="重新选择" type="upload"/></label>
 		  				<Icon title="删除图片" type="delete" onClick={deleteImg} />
 		  			</div>
 		  		</Button>
 		  		:
-		  		<Input placeholder="请输入图片地址" defaultValue={isBase64?'':props.url} onChange={change} allowClear={true}/>
+		  		<Input placeholder="请输入图片地址" defaultValue={isBase64?'':url} onChange={change} allowClear={true}/>
 		    }
   		</div>
   	)

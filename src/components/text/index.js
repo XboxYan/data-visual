@@ -64,8 +64,6 @@ const defaultProps = {
 
 const Text = React.memo((props) => {
 
-	let timer = null;
-
 	const { style:{color,fontSize,fontSpace,fontWeight,fontItalic}, data: {text} } = props;
 
 	const input = useRef(null);
@@ -75,16 +73,15 @@ const Text = React.memo((props) => {
 	const [value,setValue] = useState(text);
 
 	const change = (ev) => {
-		const target = ev.target;
-		setValue(target.value);
-		timer && clearTimeout(timer);
-		timer = setTimeout(()=>{
-			props.onChange && props.onChange({data:{text:target.value}});
-		},300);
+		if(isEdit){
+			const target = ev.target;
+			setValue(target.value);
+		}
     }
 
     const save = () => {
     	setEdit(false);
+    	props.onChange && props.onChange({data:{text:value}});
     }
 
     const edit = () => {

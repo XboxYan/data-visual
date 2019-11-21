@@ -62,3 +62,8 @@
 	position: absolute;
 	clip: rect(0,0,0,0);
 }
+
+.context-menu{
+	position: absolute;
+	inset: 0;
+}

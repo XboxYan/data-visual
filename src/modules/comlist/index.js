@@ -8,9 +8,11 @@ const comList = [{
   child: [{
     name: '柱状图',
     icon: 'bar-chart',
+    type: 'ChartBar'
   }, {
     name: '折线图',
     icon: 'line-chart',
+    type: 'ChartLine'
   }, {
     name: '饼图',
     icon: 'pie-chart',
@@ -55,7 +57,7 @@ const comList = [{
 }]
 
 const ComList = () => {
-    const [index,setIndex] = useState(1);
+    const [index,setIndex] = useState(0);
 
     const dragstart = (ev,type) => {
         ev.dataTransfer.setData('type',type||'');

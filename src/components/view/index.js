@@ -79,7 +79,7 @@ class View extends PureComponent {
         }
 	}
 
-	keymove = (ev) => {
+	keydown = (ev) => {
 		if(this.props.draggable && [37,38,39,40].includes(ev.keyCode)){
 			const left = parseInt(getComputedStyle(this.view.current).getPropertyValue('--x'));
 			const top = parseInt(getComputedStyle(this.view.current).getPropertyValue('--y'));
@@ -108,6 +108,9 @@ class View extends PureComponent {
 		if(ev.keyCode === 46 && ev.target.tagName!=='TEXTAREA'){
 			this.onDelete();
 		}
+		if(ev.keyCode === 67 && ev.ctrlKey && ev.target.tagName!=='TEXTAREA'){
+			this.onCopy();
+		}
 	}
 
 	onDelete = () => {
@@ -128,6 +131,10 @@ class View extends PureComponent {
         reset.onfinish = () => {
             this.props.onDelete &&　this.props.onDelete();
         }
+	}
+
+	onCopy = () => {
+		this.props.onCopy &&　this.props.onCopy();
 	}
 
 	resizestart = (ev) => {
@@ -248,6 +255,7 @@ class View extends PureComponent {
 			<div className={`${styles.view} ${className}`} 
 				data-type="element"
 				data-select={select}
+				autoFocus={true}
 				style={{'--x':left,'--y':top,width,height,'--zoom':zoom}} 
 				tabIndex="-1"
 				ref={this.view} 
@@ -256,7 +264,7 @@ class View extends PureComponent {
 				onDragStart={this.dragstart} 
 				onDrag={this.drag}
 				onBlur={onBlur}
-				onKeyDown={this.keymove}
+				onKeyDown={this.keydown}
 				onDragEnd={this.dragend}>
 				<div className={styles.view_inner} style={{opacity}}>
 					{children}
@@ -278,6 +286,7 @@ class View extends PureComponent {
 				}
 				<div className={styles.actions}>
 					<Tooltip placement="right" title="删除"><Icon className={`${styles.action_btn} ${styles.action_del}`} type="close" onClick={this.onDelete} /></Tooltip>
+					<Tooltip placement="right" title="复制"><Icon className={styles.action_btn} type="copy" onClick={this.onCopy} /></Tooltip>
 					{
 						action.map((el,i)=>(<Tooltip key={i} placement="right" title={el.tips}><Icon className={styles.action_btn} type={el.icon} onClick={el.onClick} /></Tooltip>))
 					}

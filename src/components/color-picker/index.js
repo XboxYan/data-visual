@@ -1,4 +1,4 @@
-import React, {useState,Fragment,useRef,useEffect,useCallback} from 'react';
+import React, {useState,Fragment,useRef,useEffect,useCallback,useReducer} from 'react';
 import { Button,Dropdown,Icon,Radio } from 'antd';
 import { ChromePicker } from 'react-color';
 import './index.css';
@@ -66,7 +66,7 @@ const useDeg = (ref,onChange) => {
 					deg = 0;
 				}
 			}else{
-				deg = x>0?deg+90:deg-90
+				deg = x>0?deg+90:deg-90;
 			}
 			if(shiftKey){
 				deg = Math.round(deg/15)*15;
@@ -76,6 +76,7 @@ const useDeg = (ref,onChange) => {
 
 		const moverstart = (ev) => {
 			start = true;
+			setDeg(ev.clientX,ev.clientY,ev.shiftKey);
 		}
 
 		const mousemove = (ev) => {
@@ -115,11 +116,21 @@ const LinearGradientColorPicker = React.memo(({color:_color,onChange}) => {
 		onChange([deg,color1,rgba]);
 	})
 
+	const reducer = (state, action) => {
+	    if (action.type === 'UPDATA') {
+	    	onChange(action.data);
+	    } else {
+	      throw new Error();
+	    }
+	}
+
+	const dispatch = useReducer(reducer)[1];
+
 	const changeColor = useCallback((_deg)=>{
 
-		onChange([_deg,color1,color2]);
+		dispatch({type:'UPDATA',data:[_deg,color1,color2]})
 
-	},[color1,color2])
+	},[color1,color2,dispatch])
 
 	useDeg(colorPane,changeColor);
 

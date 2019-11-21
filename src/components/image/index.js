@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useReducer } from 'react';
 import { Icon,message } from 'antd';
 import View from '../view';
 import { base64ToBlob } from '../../util';
@@ -24,7 +24,7 @@ const defaultProps = {
 
 const Img = React.memo((props) => {
 
-	const { data: {src='',tempSrc} } = props;
+	const { data: {src='',tempSrc},onChange } = props;
 
 	const isBase64 = src.includes('base64')||!src;
 
@@ -52,10 +52,13 @@ const Img = React.memo((props) => {
 	    	const image = new Image();
          	image.src = reader.result;
          	image.onload = () => {
-				props.onChange && props.onChange({
+				onChange({
 					style:{
 						width: image.width,
 						height: image.height
+					},
+					props:{
+						naturalSize:[image.width,image.height]
 					},
 					data:{
 						src: reader.result,
@@ -64,7 +67,6 @@ const Img = React.memo((props) => {
 				});
 		    	setLoading(false);
          	}
-			URL.revokeObjectURL(tempSrc);
 	    });
 	}
 
@@ -72,23 +74,55 @@ const Img = React.memo((props) => {
     	input.current.click();
     }
 
+    const redo = () => {
+    	if(props.props.naturalSize){
+	    	onChange({
+				style:{
+					width: props.props.naturalSize[0],
+					height: props.props.naturalSize[1]
+				}
+			});
+    	}
+    }
+
     const action = [
     	{
     		icon:'upload',
     		onClick:upload,
     		tips:'选择图片'
+    	},
+    	{
+    		icon:'redo',
+    		onClick:redo,
+    		tips:'还原'
     	}
     ]
 
+    const reducer = (state, action) => {
+	    if (action.type === 'INIT') {
+	    	if(isBase64&&src&&!tempSrc){
+				setLoading(true);
+				base64ToBlob({b64data: src.split(',')[1], contentType: 'image/png'}).then(res => {
+					setLoading(false);
+				  	onChange({data:{tempSrc:res.preview}});
+				})
+			}
+	    } else {
+	      throw new Error();
+	    }
+	}
+
+	const dispatch = useReducer(reducer)[1];
+
    	useEffect(()=>{
-		if(isBase64&&props.src&&!props.tempSrc){
-			setLoading(true);
-			base64ToBlob({b64data: props.src.split(',')[1], contentType: 'image/png'}).then(res => {
-				setLoading(false);
-			  	props.onChange && props.onChange({data:{tempSrc:res.preview}});
-			})
+		dispatch({type:'INIT'});
+	},[dispatch])
+
+	useEffect(()=>{
+		return () => {
+			URL.revokeObjectURL(tempSrc);
 		}
-	},[props,isBase64])
+	},[tempSrc])
 
   	return (
     	<View className="image-view" {...props} action={action}>

@@ -101,7 +101,7 @@ const PropsPane = () => {
                     <div className="form-item">
                         <ColorPicker color={values.color} onChange={(value)=>setValue({style:{color:value}})}/>
                     </div>
-                    <label className="form-lable">大小</label>
+                    <label className="form-lable">字号</label>
                     <div className="form-item">
                         <InputNumber
                             min={10}

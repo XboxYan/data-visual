@@ -50,7 +50,7 @@
     top:0;
     right:0;
     bottom:0;
-    border:calc(1px / var(--zoom)) solid var(--theme-color);
+    border:1px solid var(--theme-color);
     transition:.2s;
     outline:0;
     pointer-events: none;
@@ -154,7 +154,7 @@
     box-shadow: 3px 3px 15px rgba(0,0,0,.2);
     border-radius: 3px;
 }
-.view:focus-within .actions{
+.view:not([dragging]):focus-within .actions{
     opacity: 1;
     visibility: visible;
 }
@@ -189,6 +189,6 @@
 .action_del::after{
     background-color: #f5222d;
 }
-.action_del:hover{
+.action_del,.action_del:hover{
     color: #f5222d;
 }

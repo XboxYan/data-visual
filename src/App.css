@@ -40,6 +40,10 @@
   overflow: hidden;
 }
 
+.layout:focus-within+textarea{
+  pointer-events: none
+}
+
 .header {
   display: flex;
   grid-column: span 3;

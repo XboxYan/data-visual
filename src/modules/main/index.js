@@ -1,9 +1,11 @@
-import React, { useContext,useState,useEffect,useRef } from 'react';
+import React, { useContext,useState,useEffect,useRef,useReducer } from 'react';
 import { Spin, message } from 'antd';
 import './index.css';
 import { Title,Marquee,MultText } from '../../components/text';
 import Img from '../../components/image';
+import { ChartBar, ChartLine } from '../../components/chart';
 import { LayoutContext } from '../../store';
+import { base64ToBlob } from '../../util';
 
 let timer = null;
 
@@ -11,7 +13,9 @@ const MapView = {
 	'Title':Title,
 	'Marquee':Marquee,
 	'MultText':MultText,
-	'Image':Img
+	'Image':Img,
+	'ChartBar':ChartBar,
+	'ChartLine':ChartLine
 }
 
 
@@ -101,12 +105,14 @@ const Main = () => {
 
 	const [lay,setLay] = useState([0,0]);
 
-	const dragstart = (target,i) => {
+	const dragstart = i => target => {
 		dragData = target;
 		dragData.index = i;
 	}
 
 	const desk = useRef(null);
+
+	const input = useRef(null);
 
 	const {move,pos} = useMove(desk);
 
@@ -143,6 +149,9 @@ const Main = () => {
 							width: image.width,
 							height: image.height
 						},
+						props:{
+							naturalSize:[image.width,image.height]
+						},
 						data:{
 							src: reader.result,
 							tempSrc: URL.createObjectURL(file)
@@ -163,13 +172,30 @@ const Main = () => {
 		dispatch({
 			type:'ADD',
 			props: MapView[type].defaultProps,
-			position: [(x-width/2)/config.zoom,(y-height/2)/config.zoom],
+			position: [x/config.zoom-width/2,y/config.zoom-height/2],
 			components: type,
 			other:{
 				data:{
 					text: text,
 				}
 			}
+		})
+		setFocusIndex([layout.length]);
+	}
+
+	const addCom = (data,[x,y]) => {
+		const {width,height} = data.style;
+		const other = data.type === 'Image'?{
+			data:{
+				tempSrc: null,
+			}
+		}:{}
+		dispatch({
+			type:'ADD',
+			props: data,
+			position: [x/config.zoom-width/2,y/config.zoom-height/2],
+			components: data.type,
+			other:other
 		})
 		setFocusIndex([layout.length]);
 	}
@@ -219,6 +245,7 @@ const Main = () => {
 				},
 				index:dragData.index
 			})
+			setFocusIndex([dragData.index]);
 		}
 	}
 
@@ -228,15 +255,20 @@ const Main = () => {
 		    var kind = items[i].kind;
 		    var type = items[i].type;
 		    // 逻辑开始
-		    if (kind == 'string') {
-		      if (type.indexOf('text/plain') != -1) {
+		    if (kind === 'string') {
+		      if (type.indexOf('text/plain') !== -1) {
 		        items[i].getAsString(function (str) {
-		          addText(str,lay);
+		        	if(str.startsWith('#components#')){
+		        		const data = JSON.parse(str.split('#components#')[1]);
+		        		addCom(data,lay);
+		        	}else{
+		          		addText(str,lay);
+		        	}
 		        });   
 		      }
-		    } else if (kind == 'file') {
+		    } else if (kind === 'file') {
 		      // 如果是图片
-		      if (type.indexOf('image/') != -1) {
+		      if (type.indexOf('image/') !== -1) {
 		        var file = items[i].getAsFile();
 		        addImg(file,lay);
 		      }
@@ -248,7 +280,7 @@ const Main = () => {
 		dragData = null;
 	}
 
-	const keymove = (data,i) => {
+	const keymove = i => data => {
 		const [_x,_y] = data;
 		timer && clearTimeout(timer);
         timer = setTimeout(()=>{
@@ -269,7 +301,7 @@ const Main = () => {
 		
 	}
 
-	const resizeend = (data,i,left,top) => {
+	const resizeend = (i,left,top) => data => {
         dispatch({
 			type:'UPDATA',
 			source:{
@@ -298,10 +330,10 @@ const Main = () => {
 		const target = ev.target.closest('.desk-top');
 		const { left, top } = target.getBoundingClientRect();
 		setLay([ev.clientX-left,ev.clientY-top]);
-		select(ev,-1);
+		select(-1)(ev);
 	}
 
-	const select = (ev,i) => {
+	const select = i => ev => {
 		ev.stopPropagation();
 		if(!move){
 			if(!focusIndex.includes(i) && focusIndex[0]!==i){
@@ -310,7 +342,7 @@ const Main = () => {
 		}
 	}
 
-	const del = (i) => {
+	const del = (i) => () => {
 		dispatch({
 			type:'DELETE',
 			index:i
@@ -318,7 +350,14 @@ const Main = () => {
 		setFocusIndex([-1]);
 	}
 
-	const onChange = (data,index) => {
+	const copy = (data) => () => {
+		input.current.value = '#components#\n' + JSON.stringify(data);
+		input.current.select();
+		document.execCommand("cut");
+		message.success('已复制');
+	}
+
+	const onChange = index => data => {
 		dispatch({
 			type:'UPDATA',
 			source: data,
@@ -327,6 +366,35 @@ const Main = () => {
 	}
 
 	const gradientColor = Array.isArray(config.backgroundColor)?`,linear-gradient(${config.backgroundColor[0]}deg, ${config.backgroundColor[1]}, ${config.backgroundColor[2]})`:'';
+
+	const reducer = (state, action) => {
+	    if (action.type === 'INIT') {
+	    	if(config.backgroundImage.includes('base64')&&!config.backgroundTempURL){
+				setLoading(true);
+				base64ToBlob({b64data: config.backgroundImage.split(',')[1], contentType: 'image/png'}).then(res => {
+					setLoading(false);
+				  	setConfig({
+						...config,
+						backgroundTempURL: res.preview
+					})
+				})
+			}
+	    } else {
+	      throw new Error();
+	    }
+	}
+
+	const dispatchTemp = useReducer(reducer)[1];
+
+   	useEffect(()=>{
+		dispatchTemp({type:'INIT'});
+	},[dispatchTemp]);
+
+	useEffect(()=>{
+		return () => {
+			URL.revokeObjectURL(config.backgroundTempURL);
+		}
+	},[config.backgroundTempURL])
 
 	return (
 		<div className="desk-top" 
@@ -337,7 +405,7 @@ const Main = () => {
 			ref={desk}
 			onClick={clickdesk} 
 			data-select={focusIndex.includes(-1)} 
-			tabIndex={1}
+			tabIndex={-2}
 			style={{
 				width:config.width,
 				height:config.height,
@@ -351,7 +419,7 @@ const Main = () => {
 			onDragOver={dragover} 
 			onDrop={drop}
 		>
-			<input onPaste={paste} className="desk-paste" />
+			<textarea onPaste={paste} ref={input} className="desk-paste" />
 			{
 				layout.map((el,i)=>{
 					if(el){
@@ -368,14 +436,15 @@ const Main = () => {
 								props={el.props}
 								data={el.data}
 								select={focusIndex.includes(i)}
-								onChange={(data)=>onChange(data,i)}
-								onClick={(ev)=>select(ev,i)}
-								onDelete={()=>del(i)}
-								onDragStart={(dragData)=>dragstart(dragData,i)} 
+								onChange={onChange(i)}
+								onClick={select(i)}
+								onDelete={del(i)}
+								onCopy={copy(el)}
+								onDragStart={dragstart(i)} 
 								onDragEnd={dragend}
-								onKeyMove={(data)=>keymove(data,i)}
+								onKeyMove={keymove(i)}
 								onResize={resize}  
-								onResizeEnd={(resizeData)=>resizeend(resizeData,i,left,top)} />
+								onResizeEnd={resizeend(i,left,top)} />
 						)
 					}else{
 						return null;

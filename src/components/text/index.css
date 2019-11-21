@@ -55,9 +55,9 @@
 .text-mult{
     /*min-width: 100%;*/
     padding-bottom:2em;
-    -webkit-user-modify: read-write;
+    /*-webkit-user-modify: read-write;
     -moz-user-modify: read-write;
-    user-modify: read-write;
+    user-modify: read-write;*/
 }
 
 .text-mult-con{
