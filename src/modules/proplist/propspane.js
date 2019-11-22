@@ -1,9 +1,10 @@
 import React, { useContext, useState, useEffect, Fragment } from 'react';
-import { Input,InputNumber,Slider,Divider,Radio,Switch,Checkbox } from 'antd';
+import { Input,InputNumber,Slider,Divider,Radio,Switch,Checkbox,Select } from 'antd';
 import { LayoutContext } from '../../store';
 import ColorPicker from '../../components/color-picker';
 
 const InputGroup = Input.Group;
+const { Option, OptGroup } = Select;
 
 let timer = null;
 
@@ -184,6 +185,97 @@ const PropsPane = () => {
                             <Radio value="200">快</Radio>
                         </Radio.Group>
                     </div>
+                </Fragment>
+            }
+
+            {
+                atype === 'chart' &&
+                <Fragment>
+                    <Divider className="form-title" orientation="left">图表</Divider>
+                    <label className="form-lable">图例</label>
+                    <div className="form-item">
+                        <Select value={values.legendPosition} style={{width:90}} onChange={(value)=>setValue({style:{legendPosition:value}})}>
+                            <OptGroup label="上">
+                                <Option value="top-left">上-左</Option>
+                                <Option value="top-center">上-中</Option>
+                                <Option value="top-right">上-右</Option>
+                            </OptGroup>
+                            <OptGroup label="右">
+                                <Option value="right-top">右-上</Option>
+                                <Option value="right-center">右-中</Option>
+                                <Option value="right-bottom">右-下</Option>
+                            </OptGroup>
+                            <OptGroup label="下">
+                                <Option value="bottom-left">下-左</Option>
+                                <Option value="bottom-center">下-中</Option>
+                                <Option value="bottom-right">下-右</Option>
+                            </OptGroup>
+                            <OptGroup label="左">
+                                <Option value="left-top">左-上</Option>
+                                <Option value="left-center">左-中</Option>
+                                <Option value="left-bottom">左-下</Option>
+                            </OptGroup>
+                        </Select>
+                    </div>
+                    <label className="form-lable">标注</label>
+                    <div className="form-item">
+                        <Switch checked={values.labelVisible} onChange={(checked)=>setValue({props:{labelVisible:checked}})} />
+                    </div>
+                </Fragment>
+            }
+            {
+                type==="ChartBar" &&
+                <Fragment>
+                    <label className="form-lable">类型</label>
+                    <div className="form-item">
+                        <Radio.Group name="radiogroup" value={values.type} onChange={(ev)=>setValue({props:{type:ev.target.value}})}>
+                            <Radio value="interval">交错</Radio>
+                            <Radio value="intervalDodge">分组</Radio>
+                            <Radio value="intervalStack">层叠</Radio>
+                        </Radio.Group>
+                    </div>
+                    <label className="form-lable">横向显示</label>
+                    <div className="form-item">
+                        <Switch checked={values.transpose} onChange={(checked)=>setValue({props:{transpose:checked}})} />
+                    </div>
+                </Fragment>
+            }
+            {
+                type==="ChartLine" &&
+                <Fragment>
+                    <label className="form-lable">线形</label>
+                    <div className="form-item">
+                        <Radio.Group name="radiogroup" className="form-item-radio" value={values.lineShape} onChange={(ev)=>setValue({props:{lineShape:ev.target.value}})}>
+                            <Radio value="line">默认</Radio>
+                            <Radio value="smooth">平滑</Radio>
+                            <Radio value="hv">阶梯</Radio>
+                        </Radio.Group>
+                    </div>
+                    <label className="form-lable">尺寸</label>
+                    <div className="form-item">
+                        <Radio.Group name="radiogroup" className="form-item-radio" value={values.lineSize} onChange={(ev)=>setValue({props:{lineSize:ev.target.value}})}>
+                            <Radio value={1}>细</Radio>
+                            <Radio value={2}>正常</Radio>
+                            <Radio value={3}>粗</Radio>
+                        </Radio.Group>
+                    </div>
+                    <label className="form-lable">显示节点</label>
+                    <div className="form-item">
+                        <Switch checked={values.dotVisible} onChange={(checked)=>setValue({props:{dotVisible:checked}})} />
+                    </div>
+                    {
+                        values.dotVisible&&
+                        <Fragment>
+                            <label className="form-lable">节点尺寸</label>
+                            <div className="form-item">
+                                <Radio.Group name="radiogroup" className="form-item-radio" value={values.dotSize} onChange={(ev)=>setValue({props:{dotSize:ev.target.value}})}>
+                                    <Radio value={2}>小</Radio>
+                                    <Radio value={3}>正常</Radio>
+                                    <Radio value={4}>大</Radio>
+                                </Radio.Group>
+                            </div>
+                        </Fragment>
+                    }
                 </Fragment>
             }
         </div>

@@ -165,7 +165,7 @@ export const BackgroundColorPicker = React.memo(({color,onChange}) => {
 
 	return (
 		<div className="color-content">
-	  		<Radio.Group value={type} className="upload-select" onChange={modelselect}>
+	  		<Radio.Group value={type} className="form-item-radio" onChange={modelselect}>
 		        <Radio value="single">纯色</Radio>
 		        <Radio value="gradient">渐变色</Radio>
 		    </Radio.Group>

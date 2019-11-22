@@ -80,7 +80,7 @@ const ImgUpload = (props) => {
 
   	return (
   		<div className="upload-content">
-	  		<Radio.Group value={type} className="upload-select" onChange={modelselect}>
+	  		<Radio.Group value={type} className="form-item-radio" onChange={modelselect}>
 		        <Radio value="img">选择图片</Radio>
 		        <Radio value="url">输入链接</Radio>
 		    </Radio.Group>

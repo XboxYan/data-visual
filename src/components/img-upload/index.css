@@ -82,9 +82,3 @@
 .upload-content{
 	width: 100%;
 }
-
-.upload-select{
-	display: flex;
-	height: 32px;
-	align-items: center;
-}

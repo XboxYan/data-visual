@@ -15,7 +15,48 @@ import {
   Facet,
   Util
 } from "bizcharts";
+const { Global,Theme  } = G2;
+console.log(Theme)
 //import './index.css';
+//
+// const { Global } = G2; // 获取 Global 全局对象
+// const DarkTheme = Util.deepMix({}, BasicTheme, {
+
+// })
+//Global.setTheme('dark');
+console.log(112)
+const data = [
+      {
+        State: "WY",
+        小于5岁: 25635,
+        "5至13岁": 1890,
+        "14至17岁": 9314
+      },
+      {
+        State: "DC",
+        小于5岁: 30352,
+        "5至13岁": 20439,
+        "14至17岁": 10225
+      },
+      {
+        State: "VT",
+        小于5岁: 38253,
+        "5至13岁": 42538,
+        "14至17岁": 15757
+      },
+      {
+        State: "ND",
+        小于5岁: 51896,
+        "5至13岁": 67358,
+        "14至17岁": 18794
+      },
+      {
+        State: "AK",
+        小于5岁: 72083,
+        "5至13岁": 85640,
+        "14至17岁": 22153
+      }
+    ]
 
 const databar = [
 	{"name":"London","月份":"Jan.","月均降雨量":18.9},
@@ -26,6 +67,7 @@ const databar = [
 	{"name":"London","月份":"Jun.","月均降雨量":20.3},
 	{"name":"London","月份":"Jul.","月均降雨量":24},
 	{"name":"London","月份":"Aug.","月均降雨量":35.6},
+
 	{"name":"Berlin","月份":"Jan.","月均降雨量":12.4},
 	{"name":"Berlin","月份":"Feb.","月均降雨量":23.2},
 	{"name":"Berlin","月份":"Mar.","月均降雨量":34.5},
@@ -33,8 +75,34 @@ const databar = [
 	{"name":"Berlin","月份":"May","月均降雨量":52.6},
 	{"name":"Berlin","月份":"Jun.","月均降雨量":35.5},
 	{"name":"Berlin","月份":"Jul.","月均降雨量":37.4},
-	{"name":"Berlin","月份":"Aug.","月均降雨量":42.4}
+	{"name":"Berlin","月份":"Aug.","月均降雨量":42.4},
+
+  {"name":"Beijin","月份":"Jan.","月均降雨量":12.4},
+  {"name":"Beijin","月份":"Feb.","月均降雨量":23.2},
+  {"name":"Beijin","月份":"Mar.","月均降雨量":34.5},
+  {"name":"Beijin","月份":"Apr.","月均降雨量":99.7},
+  {"name":"Beijin","月份":"May","月均降雨量":52.6},
+  {"name":"Beijin","月份":"Jun.","月均降雨量":35.5},
+  {"name":"Beijin","月份":"Jul.","月均降雨量":37.4},
+  {"name":"Beijin","月份":"Aug.","月均降雨量":42.4}
 ];
+
+const dataline1 = [
+  {
+    name:"Tokyo",
+    data:{
+      x:["Jan"],
+      y:[7]
+    }
+  },
+  {
+    name:"Berlin",
+    data:{
+      x:["Jan"],
+      y:[7]
+    }
+  }
+]
 
 const dataline = [
   {
@@ -167,13 +235,16 @@ const defaultProps = {
 			width: 400,
 			height: 250,
 			opacity: 1,
-			position: 'top'
+			legendPosition: 'top-right'
 		},
 		props:{
-				
+				type:'intervalDodge',
+        transpose:false,
+        labelVisible:false,
 		},
 		data:{
-			source:databar
+			source:databar,
+
 		}
 	},
 	ChartLine:{
@@ -182,43 +253,60 @@ const defaultProps = {
 			width: 400,
 			height: 250,
 			opacity: 1,
-			position: 'top'
+			legendPosition: 'top-right'
 		},
 		props:{
-				
-		},
+        reflect:false,
+        lineShape:'line',
+        lineSize:2,
+        dotSize:3,
+        dotVisible:true,
+        labelVisible:false,
+    },
 		data:{
 			source:dataline
 		}
 	},
 }
 
+const ChartBase = React.memo((props) => {
 
+  const { style:{width,height,legendPosition},data: {source},children } = props;
+
+  return (
+    <View className="chart-view" {...props} >
+      <Chart width={width} height={height} data={source} padding="auto" >
+        <Legend position={legendPosition} />
+        <Axis />
+        <Tooltip />
+        {
+            children
+        }
+      </Chart>
+    </View>
+  )
+})
 
 
 const ChartBar = React.memo((props) => {
 
-	const { style:{width,height,position},zoom, data: {source} } = props;
+	const { props:{type,transpose,labelVisible} } = props;
 
 	return (
-		<View className="chart-view" {...props}>
-			<Chart width={width} height={height} data={source} padding={'auto'} pixelRatio={zoom}>
-		        <Legend position={position} />
-            <Axis name="月份" />
-            <Axis name="月均降雨量" />
-		        <Tooltip
-		            crosshairs={{
-		              type: "y"
-		            }}
-		        />
-		        <Geom
-		            type="interval"
-		            position="月份*月均降雨量"
-		            color={"name"}
-		            adjust={'stack'}
-		        />
-	        </Chart>
-		</View>
+    <ChartBase {...props}>
+        <Geom
+            type={type}
+            position="月份*月均降雨量"
+            color={["name"]}
+            //adjust={'stack'}
+        >
+          {
+              labelVisible &&
+              <Label content="月均降雨量" offset={10} />
+          }
+        </Geom>
+        <Coord transpose={transpose}/>
+    </ChartBase>
 	)
 })
 
@@ -226,44 +314,31 @@ ChartBar.defaultProps = defaultProps.ChartBar;
 
 const ChartLine = React.memo((props) => {
 
-	const { style:{width,height,position}, data: {source} } = props;
+	const { props:{lineShape,dotSize,dotVisible,lineSize,labelVisible} } = props;
 
 	return (
-		<View className="chart-view" {...props}>
-			<Chart width={width} height={height} data={source} padding={'auto'}>
-	        <Legend position={position} />
-          <Axis name="month" />
-          <Axis
-            name="temperature"
-            label={{
-              formatter: val => `${val}°C`
-            }}
-          />
-          <Tooltip
-            crosshairs={{
-              type: "y"
-            }}
-          />
-          <Geom
-            type="line"
-            position="month*temperature"
-            size={2}
-            color={"city"}
-            shape={"smooth"}
-          />
-          <Geom
-            type="point"
-            position="month*temperature"
-            size={4}
-            shape={"circle"}
-            color={"city"}
-            style={{
-              stroke: "#fff",
-              lineWidth: 1
-            }}
-          />
-	     </Chart>
-		</View>
+    <ChartBase {...props}>
+        <Geom
+          type="line"
+          position="month*temperature"
+          size={lineSize}
+          color={["city"]}
+          shape={lineShape}
+        />
+        <Geom
+          type="point"
+          position="month*temperature"
+          size={dotSize}
+          color={["city"]}
+          shape={["city"]}
+          opacity={dotVisible?1:0}
+        >
+          {
+              labelVisible &&
+              <Label content="temperature" offset={10} />
+          }
+        </Geom>
+    </ChartBase>
 	)
 })
 
