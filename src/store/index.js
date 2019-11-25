@@ -10,8 +10,10 @@ const initialConfig = {
 	zoom:1,
 	width:1280,
 	height:720,
-	backgroundColor:'rgba(255,255,255,1)',
+	backgroundColor:'rgba(31, 31, 31, 1)',
 	backgroundImage:'',
+	theme:'dark',
+	themeColor:["#1890FF", "#2FC25B", "#FACC14", "#223273", "#8543E0", "#13C2C2", "#3436C7", "#F04864"]
 }
 
 const LayoutAdd = (state, action) => {

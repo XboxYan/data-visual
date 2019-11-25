@@ -229,12 +229,11 @@ const PropsPane = () => {
                     <label className="form-lable">类型</label>
                     <div className="form-item">
                         <Radio.Group name="radiogroup" value={values.type} onChange={(ev)=>setValue({props:{type:ev.target.value}})}>
-                            <Radio value="interval">交错</Radio>
                             <Radio value="intervalDodge">分组</Radio>
                             <Radio value="intervalStack">层叠</Radio>
                         </Radio.Group>
                     </div>
-                    <label className="form-lable">横向显示</label>
+                    <label className="form-lable">条形</label>
                     <div className="form-item">
                         <Switch checked={values.transpose} onChange={(checked)=>setValue({props:{transpose:checked}})} />
                     </div>
@@ -276,6 +275,20 @@ const PropsPane = () => {
                             </div>
                         </Fragment>
                     }
+                    <label className="form-lable">区域</label>
+                    <div className="form-item">
+                        <Switch checked={values.showArea} onChange={(checked)=>setValue({props:{showArea:checked}})} />
+                    </div>
+                </Fragment>
+            }
+            {
+                type==="ChartPie" &&
+                <Fragment>
+                    <label className="form-lable">外观</label>
+                    <div className="form-item">
+                        <Checkbox checked={values.ring} onChange={(ev)=>setValue({props:{ring:ev.target.checked}})}>环形</Checkbox>
+                        <Checkbox checked={values.rose} onChange={(ev)=>setValue({props:{rose:ev.target.checked}})}>南丁格尔玫瑰</Checkbox>
+                    </div>
                 </Fragment>
             }
         </div>

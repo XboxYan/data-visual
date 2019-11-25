@@ -68,7 +68,7 @@
 }
 
 .form-visible{
-	margin-right: 5px;
+	margin-left: 5px;
 	cursor: pointer;
 	transition: .2s;
 	opacity: .65;
@@ -86,5 +86,25 @@
 	display: inline-flex;
 	height: 32px;
 	align-items: center;
+}
+.form-colors{
+	box-sizing: border-box;
+	padding: 5px;
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	border: 1px solid #d9d9d9;
+	border-radius: 4px;
+}
+.form-colors .color-btn{
+	padding-right: 5px;
+	border: 0;
+	box-shadow: none;
+}
+.form-colors .color-input{
+	width: 32px;
+}
+.form-colors .color-btn span,.form-colors .color-clear{
+	display: none;
 }
 

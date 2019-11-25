@@ -3,6 +3,7 @@
     padding: 0 10px;
     margin: 0;
     font-weight: normal;
+    flex: 1;
 }
 .logo-sp{
 	color: var(--theme-color);

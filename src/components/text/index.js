@@ -3,13 +3,13 @@ import View from '../view';
 import './index.css';
 
 const defaultProps = {
-	Title:{
+	Title:(theme)=>({
 		atype:'text',
 		style:{
 			width: 200,
 			height: 50,
 			opacity: 1,
-			color: '#333333',
+			color: theme?'rgba(255,255,255,1)':'rgba(31,31,31,1)',
 			fontSize: 16,
 			alignX: 'center',
 			fontWeight: false,
@@ -19,14 +19,14 @@ const defaultProps = {
 		data:{
 			text:"This is a text"
 		}
-	},
-	Marquee:{
+	}),
+	Marquee:(theme)=>({
 		atype:'text',
 		style:{
 			width: 200,
 			height: 50,
 			opacity: 1,
-			color: '#333333',
+			color: theme?'rgba(255,255,255,1)':'rgba(31,31,31,1)',
 			fontSize: 16,
 			fontWeight: false,
 			fontItalic: false,
@@ -38,14 +38,14 @@ const defaultProps = {
 		data:{
 			text:"This is a marquee"
 		}
-	},
-	MultText:{
+	}),
+	MultText:(theme)=>({
 		atype:'text',
 		style:{
 			width: 250,
 			height: 120,
 			opacity: 1,
-			color: '#333333',
+			color: theme?'rgba(255,255,255,1)':'rgba(31,31,31,1)',
 			fontSize: 16,
 			fontWeight: false,
 			fontItalic: false,
@@ -59,7 +59,7 @@ const defaultProps = {
 		data:{
 			text:"This is a MultText This is a MultText This is a MultText This is a MultText"
 		}
-	},
+	}),
 }
 
 const Text = React.memo((props) => {
@@ -136,7 +136,7 @@ const Marquee = React.memo((props) => {
 	)
 })
 
-Marquee.defaultProps = defaultProps.Marquee;
+Marquee.defaultProps = (theme)=>defaultProps.Marquee(theme);
 
 const Title = React.memo((props) => {
 
@@ -151,7 +151,7 @@ const Title = React.memo((props) => {
 	)
 })
 
-Title.defaultProps = defaultProps.Title;
+Title.defaultProps = (theme)=>defaultProps.Title(theme);
 
 const MultText = React.memo((props) => {
 
@@ -178,7 +178,7 @@ const MultText = React.memo((props) => {
 	)
 })
 
-MultText.defaultProps = defaultProps.MultText;
+MultText.defaultProps = (theme)=>defaultProps.MultText(theme);
 
 export { Title,Marquee,MultText }
 

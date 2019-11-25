@@ -5,7 +5,7 @@ import { base64ToBlob } from '../../util';
 import './index.css';
 
 const defaultProps = {
-	Image:{
+	Image:(theme)=>({
 		atype:'image',
 		style:{
 			width: 100,
@@ -19,7 +19,7 @@ const defaultProps = {
 			src:"",
 			tempSrc:""
 		}
-	},
+	}),
 }
 
 const Img = React.memo((props) => {
@@ -126,7 +126,7 @@ const Img = React.memo((props) => {
 
   	return (
     	<View className="image-view" {...props} action={action}>
-    		<div className="image-inner" onDoubleClick={upload} style={{backgroundImage:`url(${tempSrc||src})`}}>
+    		<div className="image-inner" onDoubleClick={upload} data-theme={props.theme} style={{backgroundImage:`url(${tempSrc||src})`}}>
     			<Icon className="image-place" data-show={!src} type={loading?"loading":"picture"} />
     		</div>
     		<input ref={input} onChange={imgload} className="image-input" type="file" accept="image/png, image/jpeg" />
@@ -134,6 +134,6 @@ const Img = React.memo((props) => {
   	)
 })
 
-Img.defaultProps = defaultProps.Image;
+Img.defaultProps = (theme)=>defaultProps.Image(theme);
 
 export default Img;

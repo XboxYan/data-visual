@@ -1,8 +1,14 @@
-import React, { useContext, useState } from 'react';
-import { Input,InputNumber,Slider,Icon } from 'antd';
+import React, { useContext, useState,useEffect } from 'react';
+import { Input,InputNumber,Slider,Icon,Radio } from 'antd';
 import { LayoutContext } from '../../store';
 import { BackgroundColorPicker } from '../../components/color-picker';
 import ImgUpload from '../../components/img-upload';
+import ColorPicker from '../../components/color-picker';
+import {
+  G2
+} from "bizcharts";
+
+const { Global } = G2; 
 
 const InputGroup = Input.Group;
 
@@ -12,7 +18,7 @@ const DeskPane = () => {
 
     const { config, setConfig } = useContext(LayoutContext);
 
-    const { width, height, grid, backgroundColor, backgroundImage, backgroundTempURL, gridvisible } = config;
+    const { width, height, grid, backgroundColor, backgroundImage, backgroundTempURL, gridvisible,theme,themeColor } = config;
 
     const [values, setValues] = useState({
         width, 
@@ -21,7 +27,9 @@ const DeskPane = () => {
         backgroundColor, 
         backgroundImage,
         backgroundTempURL,
-        gridvisible
+        gridvisible,
+        theme,
+        themeColor
     })
 
     const setValue = (key_value) => {
@@ -34,6 +42,23 @@ const DeskPane = () => {
             })
         },100);
     }
+
+    const setTheme = (value) => {
+        setValue({
+            theme:value,
+            backgroundColor:value==='dark'?'rgba(31, 31, 31, 1)':'rgba(255, 255, 255, 1)'
+        })
+    }
+
+    const setThemeColor = (value,i) => {
+        const colors = [...themeColor];
+        colors[i] = value;
+        setValue({themeColor:colors});
+    }
+
+    useEffect(()=>{
+        Global.setTheme(theme);
+    },[theme])
 
     return (
         <div className="form-content">
@@ -62,7 +87,7 @@ const DeskPane = () => {
             <div className="form-item">
                 <ImgUpload url={values.backgroundImage} tempUrl={values.backgroundTempURL} onChange={(value,tempUrl)=>setValue({backgroundImage:value,backgroundTempURL:tempUrl||''})}/>
             </div>
-            <label className="form-lable"><Icon className="form-visible" onClick={()=>setValue({gridvisible:!values.gridvisible})} type={values.gridvisible?"eye":"eye-invisible"}/>栅格</label>
+            <label className="form-lable">栅格<Icon className="form-visible" onClick={()=>setValue({gridvisible:!values.gridvisible})} type={values.gridvisible?"eye":"eye-invisible"}/></label>
             <div className="form-item">
                 <Slider value={values.grid} className="form-flex form-slider" onChange={(value)=>setValue({grid:value})} min={1} max={50} />
                 <InputNumber
@@ -72,6 +97,23 @@ const DeskPane = () => {
                     className="form-number"
                     onChange={(value)=>setValue({grid:value})}
                 />
+            </div>
+            <label className="form-lable">主题</label>
+            <div className="form-item">
+                <Radio.Group name="radiogroup" value={values.theme} onChange={(ev)=>setTheme(ev.target.value)}>
+                    <Radio value="default">浅色</Radio>
+                    <Radio value="dark">深色</Radio>
+                </Radio.Group>
+            </div>
+            <label className="form-lable">色板</label>
+            <div className="form-item">
+                <div className="form-colors" style={{backgroundColor:values.theme==='dark'?'#1f1f1f':'#fff'}}>
+                    {
+                        values.themeColor.map((el,i)=>(
+                            <ColorPicker color={el} key={i} onChange={(value)=>setThemeColor(value,i)}/>
+                        ))
+                    }
+                </div>
             </div>
         </div>
     )

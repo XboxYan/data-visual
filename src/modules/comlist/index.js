@@ -16,9 +16,11 @@ const comList = [{
   }, {
     name: '饼图',
     icon: 'pie-chart',
+    type: 'ChartPie'
   }, {
-    name: '散点图',
-    icon: 'dot-chart',
+    name: '雷达图',
+    icon: 'radar-chart',
+    type: 'ChartRadar'
   }]
 }, {
   name: '图片',

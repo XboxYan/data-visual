@@ -9,6 +9,9 @@
 	background-repeat: no-repeat;
 	background-position: center;
 }
+.image-inner[data-theme="dark"]{
+	color: #fff;
+}
 .image-place{
 	margin: auto;
 	font-size: 30px;

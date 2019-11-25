@@ -3,7 +3,7 @@ import { Spin, message } from 'antd';
 import './index.css';
 import { Title,Marquee,MultText } from '../../components/text';
 import Img from '../../components/image';
-import { ChartBar, ChartLine } from '../../components/chart';
+import { ChartBar, ChartLine, ChartPie, ChartRadar } from '../../components/chart';
 import { LayoutContext } from '../../store';
 import { base64ToBlob } from '../../util';
 
@@ -15,7 +15,9 @@ const MapView = {
 	'MultText':MultText,
 	'Image':Img,
 	'ChartBar':ChartBar,
-	'ChartLine':ChartLine
+	'ChartLine':ChartLine,
+	'ChartPie':ChartPie,
+	'ChartRadar':ChartRadar
 }
 
 
@@ -141,7 +143,7 @@ const Main = () => {
          	image.onload = () => {
 				dispatch({
 					type:'ADD',
-					props: MapView['Image'].defaultProps,
+					props: MapView['Image'].defaultProps(config.theme),
 					position: [(x-image.width/2)/config.zoom,(y-image.height/2)/config.zoom],
 					components: 'Image',
 					other:{
@@ -168,10 +170,10 @@ const Main = () => {
 		if(text.includes('\n')||text.length>100){
 			type = 'MultText';
 		}
-		const {width,height} = MapView[type].defaultProps.style;
+		const {width,height} = MapView[type].defaultProps(config.theme).style;
 		dispatch({
 			type:'ADD',
-			props: MapView[type].defaultProps,
+			props: MapView[type].defaultProps(config.theme),
 			position: [x/config.zoom-width/2,y/config.zoom-height/2],
 			components: type,
 			other:{
@@ -220,7 +222,7 @@ const Main = () => {
 			const offsetY = ev.dataTransfer.getData('offsetY');
 			dispatch({
 				type:'ADD',
-				props: MapView[type].defaultProps,
+				props: MapView[type].defaultProps(config.theme),
 				position: [(ev.clientX-left-offsetX)/config.zoom,(ev.clientY-top-offsetY)/config.zoom],
 				components: type
 			})
@@ -400,6 +402,7 @@ const Main = () => {
 		<div className="desk-top" 
 			data-move={move}
 			data-grid={config.gridvisible&&config.grid>=5}
+			data-theme={config.theme}
 			onWheel={zoom}
 			id="desk-top"
 			ref={desk}
@@ -410,15 +413,16 @@ const Main = () => {
 				width:config.width,
 				height:config.height,
 				backgroundColor:config.backgroundColor,
-				backgroundImage:`url(${config.backgroundTempURL||config.backgroundImage})${gradientColor}`,
+				backgroundImage:`${gradientColor}`,
 				'--grid':config.grid,
 				'--zoom':config.zoom,
 				'--x':pos[0],
 				'--y':pos[1],
-			}} 
+			}}
 			onDragOver={dragover} 
 			onDrop={drop}
 		>
+			<img className="desk-background" src={config.backgroundTempURL||config.backgroundImage} />
 			<textarea onPaste={paste} ref={input} className="desk-paste" />
 			{
 				layout.map((el,i)=>{
@@ -435,6 +439,8 @@ const Main = () => {
 								style={el.style}
 								props={el.props}
 								data={el.data}
+								theme={config.theme}
+								themeColor={config.themeColor}
 								select={focusIndex.includes(i)}
 								onChange={onChange(i)}
 								onClick={select(i)}

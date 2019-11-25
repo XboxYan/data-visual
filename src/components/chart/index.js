@@ -15,48 +15,22 @@ import {
   Facet,
   Util
 } from "bizcharts";
-const { Global,Theme  } = G2;
-console.log(Theme)
+//const { Global,Theme  } = G2;
+
 //import './index.css';
 //
-// const { Global } = G2; // 获取 Global 全局对象
+//const { Global } = G2; // 获取 Global 全局对象
 // const DarkTheme = Util.deepMix({}, BasicTheme, {
 
 // })
-//Global.setTheme('dark');
-console.log(112)
-const data = [
-      {
-        State: "WY",
-        小于5岁: 25635,
-        "5至13岁": 1890,
-        "14至17岁": 9314
-      },
-      {
-        State: "DC",
-        小于5岁: 30352,
-        "5至13岁": 20439,
-        "14至17岁": 10225
-      },
-      {
-        State: "VT",
-        小于5岁: 38253,
-        "5至13岁": 42538,
-        "14至17岁": 15757
-      },
-      {
-        State: "ND",
-        小于5岁: 51896,
-        "5至13岁": 67358,
-        "14至17岁": 18794
-      },
-      {
-        State: "AK",
-        小于5岁: 72083,
-        "5至13岁": 85640,
-        "14至17岁": 22153
-      }
-    ]
+// const { Global } = G2; // 获取 Global 全局对象
+// Global.setTheme('dark');
+// Global.registerTheme('newTheme', {
+//   colors: [ 'red', 'blue', 'yello' ]
+// })
+// Global.registerTheme('newTheme', {
+//   colors: [ 'red', 'blue', 'yellow' ]
+// })
 
 const databar = [
 	{"name":"London","月份":"Jan.","月均降雨量":18.9},
@@ -87,22 +61,6 @@ const databar = [
   {"name":"Beijin","月份":"Aug.","月均降雨量":42.4}
 ];
 
-const dataline1 = [
-  {
-    name:"Tokyo",
-    data:{
-      x:["Jan"],
-      y:[7]
-    }
-  },
-  {
-    name:"Berlin",
-    data:{
-      x:["Jan"],
-      y:[7]
-    }
-  }
-]
 
 const dataline = [
   {
@@ -227,9 +185,49 @@ const dataline = [
   }
 ]
 
+const datapie = [
+    {
+      item: "A",
+      count: 10
+    },
+    {
+      item: "B",
+      count: 21
+    },
+    {
+      item: "C",
+      count: 17
+    },
+    {
+      item: "D",
+      count: 13
+    },
+    {
+      item: "E",
+      count: 39
+    }
+];
+
+const dataradar = [
+  {"item":"Design","user":"a","score":70},
+  {"item":"Design","user":"b","score":30},
+  {"item":"Development","user":"a","score":60},
+  {"item":"Development","user":"b","score":70},
+  {"item":"Marketing","user":"a","score":50},
+  {"item":"Marketing","user":"b","score":60},
+  {"item":"Users","user":"a","score":40},
+  {"item":"Users","user":"b","score":50},
+  {"item":"Test","user":"a","score":60},
+  {"item":"Test","user":"b","score":70},
+  {"item":"Language","user":"a","score":70},
+  {"item":"Language","user":"b","score":50},
+  {"item":"Technology","user":"a","score":50},
+  {"item":"Technology","user":"b","score":40},
+]
+
 
 const defaultProps = {
-	ChartBar:{
+	ChartBar:(theme)=>({
 		atype:'chart',
 		style:{
 			width: 400,
@@ -246,8 +244,8 @@ const defaultProps = {
 			source:databar,
 
 		}
-	},
-	ChartLine:{
+	}),
+	ChartLine:(theme)=>({
 		atype:'chart',
 		style:{
 			width: 400,
@@ -256,7 +254,6 @@ const defaultProps = {
 			legendPosition: 'top-right'
 		},
 		props:{
-        reflect:false,
         lineShape:'line',
         lineSize:2,
         dotSize:3,
@@ -266,18 +263,52 @@ const defaultProps = {
 		data:{
 			source:dataline
 		}
-	},
+	}),
+  ChartPie:(theme)=>({
+    atype:'chart',
+    style:{
+      width: 400,
+      height: 250,
+      opacity: 1,
+      legendPosition: 'right-top'
+    },
+    props:{
+        labelVisible:true,
+        ring:false,
+        rose:false
+    },
+    data:{
+      source:datapie
+    }
+  }),
+  ChartRadar:(theme)=>({
+    atype:'chart',
+    style:{
+      width: 400,
+      height: 250,
+      opacity: 1,
+      legendPosition: 'top-right'
+    },
+    props:{
+        labelVisible:true,
+        ring:false,
+        rose:false
+    },
+    data:{
+      source:dataradar
+    }
+  }),
 }
 
 const ChartBase = React.memo((props) => {
 
-  const { style:{width,height,legendPosition},data: {source},children } = props;
+  const { theme, themeColor, scale={}, style:{width,height,legendPosition},data: {source},children } = props;
+  const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
 
   return (
     <View className="chart-view" {...props} >
-      <Chart width={width} height={height} data={source} padding="auto" >
-        <Legend position={legendPosition} />
-        <Axis />
+      <Chart width={width} height={height} scale={scale} data={source} background={{fill:'transparent'}} plotBackground={{fill:'transparent'}} padding="auto" theme={theme}>
+        <Legend position={legendPosition} textStyle={{fill:color}} />
         <Tooltip />
         {
             children
@@ -290,14 +321,17 @@ const ChartBase = React.memo((props) => {
 
 const ChartBar = React.memo((props) => {
 
-	const { props:{type,transpose,labelVisible} } = props;
+	const { theme,themeColor,props:{type,transpose,labelVisible} } = props;
+  const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
 
 	return (
     <ChartBase {...props}>
+        <Axis name="月均降雨量" grid={null} label={{textStyle:{fill:color}}} />
+        <Axis name="月份" line={{stroke:color,opacity:.5}} tickLine={null} label={{textStyle:{fill:color}}} />
         <Geom
             type={type}
             position="月份*月均降雨量"
-            color={["name"]}
+            color={["name",themeColor]}
             //adjust={'stack'}
         >
           {
@@ -310,38 +344,150 @@ const ChartBar = React.memo((props) => {
 	)
 })
 
-ChartBar.defaultProps = defaultProps.ChartBar;
+ChartBar.defaultProps = (theme)=>defaultProps.ChartBar(theme);
 
 const ChartLine = React.memo((props) => {
 
-	const { props:{lineShape,dotSize,dotVisible,lineSize,labelVisible} } = props;
+	const { theme,themeColor,props:{lineShape,dotSize,dotVisible,lineSize,labelVisible,showArea} } = props;
+  const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
 
 	return (
     <ChartBase {...props}>
+        <Axis name="temperature" grid={null} label={{textStyle:{fill:color}}} />
+        <Axis name="month" line={{stroke:color,opacity:.5}} tickLine={null} label={{textStyle:{fill:color}}} />
         <Geom
           type="line"
           position="month*temperature"
           size={lineSize}
-          color={["city"]}
+          color={["city",themeColor]}
           shape={lineShape}
         />
         <Geom
           type="point"
           position="month*temperature"
           size={dotSize}
-          color={["city"]}
+          color={["city",themeColor]}
           shape={["city"]}
           opacity={dotVisible?1:0}
         >
-          {
-              labelVisible &&
-              <Label content="temperature" offset={10} />
-          }
+        <Geom type="area" position="month*temperature" color={['city']} opacity={showArea?0.2:0} />
+        {
+            labelVisible &&
+            <Label content="temperature" offset={10} />
+        }
         </Geom>
     </ChartBase>
 	)
 })
 
-ChartLine.defaultProps = defaultProps.ChartLine;
+ChartLine.defaultProps = (theme)=>defaultProps.ChartLine(theme);
 
-export { ChartBar, ChartLine };
+const ChartPie = React.memo((props) => {
+
+  const { theme,themeColor,props:{ring, rose, labelVisible}, data:{source} } = props;
+  const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
+  const total = source.reduce((a,b)=>a+b.count,0);
+  
+  const data =  source.map(el=>({
+    ...el,
+    percent:el.count/total
+  }))
+
+  return (
+    <ChartBase {...props} data={{source:data}}>
+        <Geom
+          type="intervalStack"
+          position={rose?"item*percent":"percent"}
+          color={["item",themeColor]}
+          tooltip={[
+              'item*percent',
+              (item, percent) => {
+                percent = `${percent * 100}%`;
+                return {
+                  name: item,
+                  value: percent,
+                };
+              },
+          ]}
+        >
+            {
+                labelVisible &&
+                <Label
+                    autoRotate={false}
+                    content="percent"
+                    labelLine={{lineWidth:1}}
+                    textStyle={{fill:color}}
+                    formatter={(val, item) => {
+                      return (val*100).toFixed(2) + '%';
+                    }}
+                />
+            }
+        </Geom>
+        <Tooltip
+            showTitle={false}
+            itemTpl='<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>'
+        />
+        <Coord type={rose?"polar":"theta"} radius={rose?1:0.8} innerRadius={ring?(rose?0.2:0.65):0} />
+    </ChartBase>
+  )
+})
+
+ChartPie.defaultProps = (theme)=>defaultProps.ChartPie(theme);
+
+const ChartRadar = React.memo((props) => {
+
+  const { theme,themeColor,props:{lineShape,dotSize,dotVisible,lineSize,labelVisible,showArea} } = props;
+  const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
+
+  return (
+    <ChartBase {...props} scale={{score:{min:0}}}>
+        <Axis
+            name="item"
+            line={null}
+            tickLine={null}
+            label={{textStyle:{fill:color}}}
+            grid={{
+              lineStyle: {
+                lineDash: null,
+                stroke:color,
+                strokeOpacity:.3
+              },
+              hideFirstLine: false
+            }}
+        />
+        <Axis
+            name="score"
+            line={null}
+            tickLine={null}
+            label={{textStyle:{fill:color}}}
+            grid={{
+              type: "polygon",
+              lineStyle: {
+                lineDash: null,
+                stroke:color,
+                strokeOpacity:.3
+              },
+              alternateColor: "rgba(0, 0, 0, 0.1)",
+            }}
+        />
+        <Geom type="area" position="item*score" color={["user",themeColor]} />
+        <Geom type="line" position="item*score" color={["user",themeColor]} size={2} />
+        <Geom
+          type="point"
+          position="item*score"
+          color={["user",themeColor]}
+          shape="circle"
+          size={3}
+          style={{
+            stroke: "#fff",
+            lineWidth: 1,
+          }}
+        />
+        <Coord type={"polar"} radius={0.8} />
+    </ChartBase>
+  )
+})
+
+ChartRadar.defaultProps = (theme)=>defaultProps.ChartRadar(theme);
+
+export { ChartBar, ChartLine, ChartPie, ChartRadar };
