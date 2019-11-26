@@ -21,6 +21,10 @@ const comList = [{
     name: '雷达图',
     icon: 'radar-chart',
     type: 'ChartRadar'
+  }, {
+    name: '百分图',
+    icon: 'loading-3-quarters',
+    type: 'ChartPercent'
   }]
 }, {
   name: '图片',

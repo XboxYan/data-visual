@@ -71,7 +71,7 @@ const dataline = [
   {
       month: "Jan",
       city: "London",
-      temperature: 3.9
+      temperature: -3.9
   },
   {
       month: "Feb",
@@ -81,7 +81,7 @@ const dataline = [
   {
       month: "Feb",
       city: "London",
-      temperature: 4.2
+      temperature: -4.2
   },
   {
       month: "Mar",
@@ -91,7 +91,7 @@ const dataline = [
   {
       month: "Mar",
       city: "London",
-      temperature: 5.7
+      temperature: -5.7
   },
   {
       month: "Apr",
@@ -225,20 +225,25 @@ const dataradar = [
   {"item":"Technology","user":"b","score":40},
 ]
 
+const datapercent = {"item":"a","value":34,"total":100};
+
+
 
 const defaultProps = {
 	ChartBar:(theme)=>({
 		atype:'chart',
 		style:{
-			width: 400,
-			height: 250,
-			opacity: 1,
-			legendPosition: 'top-right'
-		},
-		props:{
+  			width: 400,
+  			height: 250,
+  			opacity: 1,
+    },
+    props:{
+        legendVisible:true,
+		    legendPosition: 'top-right',
 				type:'intervalDodge',
         transpose:false,
         labelVisible:false,
+        hollow:false
 		},
 		data:{
 			source:databar,
@@ -248,12 +253,13 @@ const defaultProps = {
 	ChartLine:(theme)=>({
 		atype:'chart',
 		style:{
-			width: 400,
-			height: 250,
-			opacity: 1,
-			legendPosition: 'top-right'
-		},
-		props:{
+  			width: 400,
+  			height: 250,
+  			opacity: 1,
+    },
+    props:{
+        legendVisible:true,
+		    legendPosition: 'top-right',
         lineShape:'line',
         lineSize:2,
         dotSize:3,
@@ -267,48 +273,66 @@ const defaultProps = {
   ChartPie:(theme)=>({
     atype:'chart',
     style:{
-      width: 400,
-      height: 250,
-      opacity: 1,
-      legendPosition: 'right-top'
+        width: 400,
+        height: 250,
+        opacity: 1,
     },
     props:{
+        legendVisible:false,
+        legendPosition: 'right-top',
         labelVisible:true,
         ring:false,
-        rose:false
+        rose:false,
+        lebelPosition:'outside'
     },
     data:{
-      source:datapie
+        source:datapie
     }
   }),
   ChartRadar:(theme)=>({
     atype:'chart',
     style:{
-      width: 400,
-      height: 250,
-      opacity: 1,
-      legendPosition: 'top-right'
+        width: 400,
+        height: 250,
+        opacity: 1,
     },
     props:{
-        labelVisible:true,
-        ring:false,
-        rose:false
+        legendVisible:true,
+        legendPosition: 'top-right',
+        axiShape:'polygon'
     },
     data:{
-      source:dataradar
+        source:dataradar
+    }
+  }),
+  ChartPercent:(theme)=>({
+    atype:'chart',
+    style:{
+        width: 200,
+        height: 200,
+        opacity: 1,
+    },
+    props:{
+        lockRatio:true,
+        percentColor:0,
+        titleVisible:false,
+        title:'百分比'
+    },
+    data:{
+        source:datapercent
     }
   }),
 }
 
 const ChartBase = React.memo((props) => {
 
-  const { theme, themeColor, scale={}, style:{width,height,legendPosition},data: {source},children } = props;
+  const { theme, themeColor, scale={}, style:{width,height},props:{legendVisible,legendPosition},data: {source},children } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
 
   return (
     <View className="chart-view" {...props} >
       <Chart width={width} height={height} scale={scale} data={source} background={{fill:'transparent'}} plotBackground={{fill:'transparent'}} padding="auto" theme={theme}>
-        <Legend position={legendPosition} textStyle={{fill:color}} />
+        <Legend visible={legendVisible} position={legendPosition} textStyle={{fill:color}} />
         <Tooltip />
         {
             children
@@ -321,7 +345,7 @@ const ChartBase = React.memo((props) => {
 
 const ChartBar = React.memo((props) => {
 
-	const { theme,themeColor,props:{type,transpose,labelVisible} } = props;
+	const { theme,themeColor,props:{type,transpose,labelVisible,hollow} } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
 
 	return (
@@ -331,7 +355,11 @@ const ChartBar = React.memo((props) => {
         <Geom
             type={type}
             position="月份*月均降雨量"
+            shape={hollow?"hollowRect":"rect"}
             color={["name",themeColor]}
+            style={{
+                lineWidth: hollow?1:0
+            }}
             //adjust={'stack'}
         >
           {
@@ -356,21 +384,24 @@ const ChartLine = React.memo((props) => {
         <Axis name="temperature" grid={null} label={{textStyle:{fill:color}}} />
         <Axis name="month" line={{stroke:color,opacity:.5}} tickLine={null} label={{textStyle:{fill:color}}} />
         <Geom
-          type="line"
-          position="month*temperature"
-          size={lineSize}
-          color={["city",themeColor]}
-          shape={lineShape}
+            type="line"
+            position="month*temperature"
+            size={lineSize}
+            color={["city",themeColor]}
+            shape={lineShape}
         />
         <Geom
-          type="point"
-          position="month*temperature"
-          size={dotSize}
-          color={["city",themeColor]}
-          shape={["city"]}
-          opacity={dotVisible?1:0}
+            type="point"
+            position="month*temperature"
+            size={dotSize}
+            color={["city",themeColor]}
+            shape={["city"]}
+            opacity={dotVisible?1:0}
         >
-        <Geom type="area" position="month*temperature" color={['city']} opacity={showArea?0.2:0} />
+        {
+            showArea &&
+            <Geom type="area" position="month*temperature" color={['city',themeColor]} opacity={0.2} />
+        }
         {
             labelVisible &&
             <Label content="temperature" offset={10} />
@@ -384,14 +415,22 @@ ChartLine.defaultProps = (theme)=>defaultProps.ChartLine(theme);
 
 const ChartPie = React.memo((props) => {
 
-  const { theme,themeColor,props:{ring, rose, labelVisible}, data:{source} } = props;
+  const { style:{width,height},theme,themeColor,props:{ring, rose, labelVisible,lebelPosition}, data:{source} } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
   const total = source.reduce((a,b)=>a+b.count,0);
   
   const data =  source.map(el=>({
-    ...el,
-    percent:el.count/total
+      ...el,
+      percent:el.count/total
   }))
+
+  const innerside = lebelPosition==='innerside'&&!ring&&!rose?{
+      offset:-Math.min(width,height)*0.2+8,
+      textStyle:{
+          fill:'#fff',
+          textAlign:'center'
+      }
+  }:{}
 
   return (
     <ChartBase {...props} data={{source:data}}>
@@ -415,10 +454,11 @@ const ChartPie = React.memo((props) => {
                 <Label
                     autoRotate={false}
                     content="percent"
-                    labelLine={{lineWidth:1}}
+                    labelLine={{lineWidth: 1}}
                     textStyle={{fill:color}}
+                    {...innerside}
                     formatter={(val, item) => {
-                      return (val*100).toFixed(2) + '%';
+                        return (lebelPosition==='outside'||rose||ring?(item.point.item + ': '):'')+(val*100).toFixed(0) + '%';
                     }}
                 />
             }
@@ -427,7 +467,7 @@ const ChartPie = React.memo((props) => {
             showTitle={false}
             itemTpl='<li><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}: {value}</li>'
         />
-        <Coord type={rose?"polar":"theta"} radius={rose?1:0.8} innerRadius={ring?(rose?0.2:0.65):0} />
+        <Coord type={rose?"polar":"theta"} radius={rose?1:0.8} innerRadius={ring?(rose?0.2:0.7):0} />
     </ChartBase>
   )
 })
@@ -436,11 +476,18 @@ ChartPie.defaultProps = (theme)=>defaultProps.ChartPie(theme);
 
 const ChartRadar = React.memo((props) => {
 
-  const { theme,themeColor,props:{lineShape,dotSize,dotVisible,lineSize,labelVisible,showArea} } = props;
+  const { theme,themeColor,props:{axiShape} } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
 
+  const cols = {
+      score: {
+          min: 0,
+          tickCount: 5,
+      }
+  };
+
   return (
-    <ChartBase {...props} scale={{score:{min:0}}}>
+    <ChartBase {...props} scale={cols}>
         <Axis
             name="item"
             line={null}
@@ -459,9 +506,9 @@ const ChartRadar = React.memo((props) => {
             name="score"
             line={null}
             tickLine={null}
-            label={{textStyle:{fill:color}}}
+            label={null}
             grid={{
-              type: "polygon",
+              type: axiShape,
               lineStyle: {
                 lineDash: null,
                 stroke:color,
@@ -473,15 +520,15 @@ const ChartRadar = React.memo((props) => {
         <Geom type="area" position="item*score" color={["user",themeColor]} />
         <Geom type="line" position="item*score" color={["user",themeColor]} size={2} />
         <Geom
-          type="point"
-          position="item*score"
-          color={["user",themeColor]}
-          shape="circle"
-          size={3}
-          style={{
-            stroke: "#fff",
-            lineWidth: 1,
-          }}
+            type="point"
+            position="item*score"
+            color={["user",themeColor]}
+            shape="circle"
+            size={3}
+            style={{
+              stroke: "#fff",
+              lineWidth: 1,
+            }}
         />
         <Coord type={"polar"} radius={0.8} />
     </ChartBase>
@@ -490,4 +537,40 @@ const ChartRadar = React.memo((props) => {
 
 ChartRadar.defaultProps = (theme)=>defaultProps.ChartRadar(theme);
 
-export { ChartBar, ChartLine, ChartPie, ChartRadar };
+const ChartPercent = React.memo((props) => {
+
+  const { style:{width,height},theme,themeColor,props:{percentColor,titleVisible,title=''}, data:{source} } = props;
+
+  const color = theme==='dark'?'rgba(255,255,255,.2)':'rgba(0,0,0,.2)';
+
+  const data = [source,{
+      item:'other',
+      value:source.total-source.value
+  }]
+
+  const percent = parseInt(source.value/source.total * 100,10);
+
+  return (
+    <ChartBase {...props} data={{source:data}}>
+        <Geom
+          type="intervalStack"
+          position={"value"}
+          color={["item",[themeColor[percentColor],color]]}
+        />
+        <Coord type={"theta"} radius={0.8} innerRadius={0.7} />
+        <Legend name="item" visible={false} />
+        <Tooltip triggerOn="none"/>
+        <Guide>
+            <Guide.Html
+                position={["50%", "50%"]}
+                html={`<div style="text-align: center;font-size:${12}px;color:${theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)'}"><div style="font-size:1em">${titleVisible?title:''}</div><span style="font-size:1.5em">${percent}%</span></div>`}
+                alignY="middle"
+            />
+        </Guide>
+    </ChartBase>
+  )
+})
+
+ChartPercent.defaultProps = (theme)=>defaultProps.ChartPercent(theme);
+
+export { ChartBar, ChartLine, ChartPie, ChartRadar, ChartPercent };

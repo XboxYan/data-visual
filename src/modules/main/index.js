@@ -3,7 +3,7 @@ import { Spin, message } from 'antd';
 import './index.css';
 import { Title,Marquee,MultText } from '../../components/text';
 import Img from '../../components/image';
-import { ChartBar, ChartLine, ChartPie, ChartRadar } from '../../components/chart';
+import { ChartBar, ChartLine, ChartPie, ChartRadar, ChartPercent } from '../../components/chart';
 import { LayoutContext } from '../../store';
 import { base64ToBlob } from '../../util';
 
@@ -17,7 +17,8 @@ const MapView = {
 	'ChartBar':ChartBar,
 	'ChartLine':ChartLine,
 	'ChartPie':ChartPie,
-	'ChartRadar':ChartRadar
+	'ChartRadar':ChartRadar,
+	'ChartPercent':ChartPercent
 }
 
 
