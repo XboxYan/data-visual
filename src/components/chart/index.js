@@ -1,8 +1,6 @@
-import React, { useState, useRef, useEffect, useReducer } from 'react';
-import { Icon,message } from 'antd';
+import React from 'react';
 import View from '../view';
 import {
-  G2,
   Chart,
   Geom,
   Axis,
@@ -11,26 +9,8 @@ import {
   Label,
   Legend,
   Guide,
-  Shape,
-  Facet,
-  Util
 } from "bizcharts";
-//const { Global,Theme  } = G2;
 
-//import './index.css';
-//
-//const { Global } = G2; // 获取 Global 全局对象
-// const DarkTheme = Util.deepMix({}, BasicTheme, {
-
-// })
-// const { Global } = G2; // 获取 Global 全局对象
-// Global.setTheme('dark');
-// Global.registerTheme('newTheme', {
-//   colors: [ 'red', 'blue', 'yello' ]
-// })
-// Global.registerTheme('newTheme', {
-//   colors: [ 'red', 'blue', 'yellow' ]
-// })
 
 const databar = [
 	{"name":"London","月份":"Jan.","月均降雨量":18.9},
@@ -246,7 +226,8 @@ const defaultProps = {
         hollow:false
 		},
 		data:{
-			source:databar,
+      dataType:'static',
+			dataset:databar,
 
 		}
 	}),
@@ -267,7 +248,8 @@ const defaultProps = {
         labelVisible:false,
     },
 		data:{
-			source:dataline
+        dataType:'static',
+  			dataset:dataline
 		}
 	}),
   ChartPie:(theme)=>({
@@ -286,7 +268,8 @@ const defaultProps = {
         lebelPosition:'outside'
     },
     data:{
-        source:datapie
+        dataType:'static',
+        dataset:datapie
     }
   }),
   ChartRadar:(theme)=>({
@@ -302,7 +285,8 @@ const defaultProps = {
         axiShape:'polygon'
     },
     data:{
-        source:dataradar
+        dataType:'static',
+        dataset:dataradar
     }
   }),
   ChartPercent:(theme)=>({
@@ -319,19 +303,36 @@ const defaultProps = {
         title:'百分比'
     },
     data:{
-        source:datapercent
+        dataType:'static',
+        dataset:datapercent,
+        dataDemo:{
+          "value":34,
+          "total":100
+        },
+        dataMap:[
+            {
+                name:'当前值',
+                defautValue:'value',
+                value:'value'
+            },
+            {
+                name:'总量',
+                defautValue:'total',
+                value:'total'
+            }
+        ]
     }
   }),
 }
 
 const ChartBase = React.memo((props) => {
 
-  const { theme, themeColor, scale={}, style:{width,height},props:{legendVisible,legendPosition},data: {source},children } = props;
+  const { theme, scale={}, style:{width,height},props:{legendVisible,legendPosition},data: {dataset},children } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
 
   return (
     <View className="chart-view" {...props} >
-      <Chart width={width} height={height} scale={scale} data={source} background={{fill:'transparent'}} plotBackground={{fill:'transparent'}} padding="auto" theme={theme}>
+      <Chart width={width} height={height} scale={scale} data={dataset} background={{fill:'transparent'}} plotBackground={{fill:'transparent'}} padding="auto" theme={theme}>
         <Legend visible={legendVisible} position={legendPosition} textStyle={{fill:color}} />
         <Tooltip />
         {
@@ -415,11 +416,11 @@ ChartLine.defaultProps = (theme)=>defaultProps.ChartLine(theme);
 
 const ChartPie = React.memo((props) => {
 
-  const { style:{width,height},theme,themeColor,props:{ring, rose, labelVisible,lebelPosition}, data:{source} } = props;
+  const { style:{width,height},theme,themeColor,props:{ring, rose, labelVisible,lebelPosition}, data:{dataset} } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
-  const total = source.reduce((a,b)=>a+b.count,0);
+  const total = dataset.reduce((a,b)=>a+b.count,0);
   
-  const data =  source.map(el=>({
+  const data =  dataset.map(el=>({
       ...el,
       percent:el.count/total
   }))
@@ -433,7 +434,7 @@ const ChartPie = React.memo((props) => {
   }:{}
 
   return (
-    <ChartBase {...props} data={{source:data}}>
+    <ChartBase {...props} data={{dataset:data}}>
         <Geom
           type="intervalStack"
           position={rose?"item*percent":"percent"}
@@ -539,19 +540,19 @@ ChartRadar.defaultProps = (theme)=>defaultProps.ChartRadar(theme);
 
 const ChartPercent = React.memo((props) => {
 
-  const { style:{width,height},theme,themeColor,props:{percentColor,titleVisible,title=''}, data:{source} } = props;
+  const { theme,themeColor,props:{percentColor,titleVisible,title=''}, data:{dataset} } = props;
 
   const color = theme==='dark'?'rgba(255,255,255,.2)':'rgba(0,0,0,.2)';
 
-  const data = [source,{
+  const data = [dataset,{
       item:'other',
-      value:source.total-source.value
+      value:dataset.total-dataset.value
   }]
 
-  const percent = parseInt(source.value/source.total * 100,10);
+  const percent = parseInt(dataset.value/dataset.total * 100,10);
 
   return (
-    <ChartBase {...props} data={{source:data}}>
+    <ChartBase {...props} data={{dataset:data}}>
         <Geom
           type="intervalStack"
           position={"value"}

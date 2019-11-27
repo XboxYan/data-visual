@@ -17,6 +17,7 @@ const defaultProps = {
 			fontSpace: 0
 		},
 		data:{
+			dataType:'static',
 			text:"This is a text"
 		}
 	}),
@@ -36,6 +37,7 @@ const defaultProps = {
 			speed: 100
 		},
 		data:{
+			dataType:'static',
 			text:"This is a marquee"
 		}
 	}),
@@ -57,6 +59,7 @@ const defaultProps = {
 			speed: 100
 		},
 		data:{
+			dataType:'static',
 			text:"This is a MultText This is a MultText This is a MultText This is a MultText"
 		}
 	}),

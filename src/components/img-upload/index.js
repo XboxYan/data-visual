@@ -11,7 +11,7 @@ const ImgUpload = (props) => {
 	
 	const { url, tempUrl, onChange } = props;
 
-	const isBase64 = url.includes('base64')||!url;
+	const isBase64 = (url && url.includes('base64'))||!url;
 
 	const [loading,setLoading] = useState(false);
 
@@ -54,8 +54,12 @@ const ImgUpload = (props) => {
 		const reader = new FileReader();
 	    reader.readAsDataURL(file);
 	    reader.addEventListener('load', () => {
-	    	setLoading(false);
-			onChange(reader.result,URL.createObjectURL(file));
+	    	const image = new Image();
+         	image.src = reader.result;
+         	image.onload = () => {
+         		onChange(reader.result,URL.createObjectURL(file),image.width,image.height);
+		    	setLoading(false);
+         	}
 	    });
 	}
 
@@ -63,7 +67,11 @@ const ImgUpload = (props) => {
 		const value = ev.target.value;
 		timer && clearTimeout(timer);
 		timer = setTimeout(()=>{
-			onChange(value);
+			const image = new Image();
+         	image.src = value;
+         	image.onload = () => {
+         		onChange(value,null,image.width,image.height);
+         	}
 		},300);
 	}
 

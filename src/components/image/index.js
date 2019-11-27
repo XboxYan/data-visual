@@ -16,6 +16,7 @@ const defaultProps = {
 			lockRatio:true
 		},
 		data:{
+			dataType:'static',
 			src:"",
 			tempSrc:""
 		}
@@ -24,7 +25,7 @@ const defaultProps = {
 
 const Img = React.memo((props) => {
 
-	const { data: {src='',tempSrc},onChange } = props;
+	const { data: {src,tempSrc},onChange } = props;
 
 	const isBase64 = src.includes('base64')||!src;
 

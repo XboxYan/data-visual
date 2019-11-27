@@ -423,7 +423,7 @@ const Main = () => {
 			onDragOver={dragover} 
 			onDrop={drop}
 		>
-			<img className="desk-background" src={config.backgroundTempURL||config.backgroundImage} />
+			<img alt="desk-background" className="desk-background" src={config.backgroundTempURL||config.backgroundImage} />
 			<textarea onPaste={paste} ref={input} className="desk-paste" />
 			{
 				layout.map((el,i)=>{

@@ -31,7 +31,7 @@ const PropsPane = () => {
         setValues({
             ...style,...props
         })
-    },[focusIndex,style,props,style.left,style.top,style.width,style.height]);
+    },[style,props,style.left,style.top,style.width,style.height]);
 
     const ratio = values.height/values.width;
 

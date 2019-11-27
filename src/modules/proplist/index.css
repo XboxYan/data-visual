@@ -158,3 +158,34 @@
 .color-pane.ant-radio-button-wrapper-checked::after{
 	opacity: 1;
 }
+
+.form-block{
+	width: 100%;
+}
+
+.form-textarea[data-error=true]{
+	border-color: #f5222d!important;
+}
+
+.form-data-demo{
+	width: 100%;
+	white-space: pre-wrap;
+}
+
+.form-map{
+	display: flex;
+	width: 100%;
+}
+
+.form-map:not(:first-child){
+	margin-top:10px;
+}
+
+.form-map-name{
+	width: 50px;
+	font-style: italic;
+}
+
+.form-map-input{
+	flex: 1;
+}

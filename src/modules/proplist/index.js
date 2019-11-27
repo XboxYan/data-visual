@@ -3,6 +3,7 @@ import { Tabs } from 'antd';
 import './index.css';
 import DeskPane from './deskpane';
 import PropsPane from './propspane';
+import SourcePane from './sourcepane';
 import { LayoutContext } from '../../store';
 const { TabPane } = Tabs;
 
@@ -17,9 +18,11 @@ const PropList = () => {
 			    		isDesk?<DeskPane/>:<PropsPane/>
 			    	}
 			    </TabPane>
-			    {
-			    	!isDesk && <TabPane tab="数据" key="2">22326</TabPane>
-			    }
+			    <TabPane tab="数据" key="2">
+				    {
+				    	!isDesk && <SourcePane/>
+				    }
+			    </TabPane>
 			</Tabs>
 	    )
 	}
