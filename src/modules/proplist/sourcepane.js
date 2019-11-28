@@ -1,7 +1,8 @@
 import React, { useContext, useState, useEffect, Fragment } from 'react';
-import { Input,Divider,Select,Alert,Icon } from 'antd';
+import { Input,Divider,Select,Alert,Icon,Tag,Table } from 'antd';
 import { LayoutContext } from '../../store';
 import ImgUpload from '../../components/img-upload';
+const { Column, ColumnGroup } = Table;
 
 const Option = Select.Option;
 
@@ -49,11 +50,26 @@ const SourcePane = () => {
     	
     }
 
+    const chooseKey = (value,i) => {
+        const dataMap = [...data.dataMap];
+        dataMap[i].value = value;
+        dispatch({
+            type:'UPDATA',
+            source: {data:{dataMap}},
+            index:focusIndex
+        })
+    }
+
     useEffect(() => {
         setValues({
             ...data,dataset:JSON.stringify(data.dataset,null,2)
         })
     },[data,data.src,data.text]);
+
+    const parseKey = (data) => {
+        const obj = Array.isArray(data)?data[0]:data;
+        return Object.keys(obj);
+    }
 
     return (
         <div className="form-content">
@@ -90,14 +106,17 @@ const SourcePane = () => {
             	atype === 'chart' &&
             	<Fragment>
             		<Divider className="form-title" orientation="left">数据映射</Divider>
-            		<label className="form-lable">字段</label>
-            		<div>
-	            		{
-	            			data.dataMap.map((item,i)=>(
-	            				<Input className="form-map" key={i} addonBefore={<div className="form-map-name">{item.name}</div>} addonAfter={<div><Icon type="arrow-right" />{item.defautValue}</div>} defaultValue={item.value} />
-	            			))
-	            		}
-            		</div>
+            		<Table className="form-table" dataSource={data.dataMap} pagination={{ position: 'none' }} size="small">
+                        <Column title="字段" dataIndex="key" key="key" render={key=><Tag color="green">{key}</Tag>} />
+                        <Column title="说明" dataIndex="name" key="name" />
+                        <Column title="映射" dataIndex="value" key="value" render={(value,record,index)=>(
+                            <Select size="small" value={value} onChange={value=>chooseKey(value,index)}>
+                                {
+                                    parseKey(data.dataset).map((value,i)=><Option value={value} key={i}>{value}</Option>)
+                                }
+                            </Select>
+                        )} />
+                    </Table>
             		<label className="form-lable">示例</label>
             		<div className="form-item">
             			<Alert className="form-data-demo" message={JSON.stringify(data.dataDemo,null,2)} type="success" />

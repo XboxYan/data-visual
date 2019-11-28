@@ -13,54 +13,54 @@ import {
 
 
 const databar = [
-	{"name":"London","月份":"Jan.","月均降雨量":18.9},
-	{"name":"London","月份":"Feb.","月均降雨量":28.8},
-	{"name":"London","月份":"Mar.","月均降雨量":39.3},
-	{"name":"London","月份":"Apr.","月均降雨量":81.4},
-	{"name":"London","月份":"May","月均降雨量":47},
-	{"name":"London","月份":"Jun.","月均降雨量":20.3},
-	{"name":"London","月份":"Jul.","月均降雨量":24},
-	{"name":"London","月份":"Aug.","月均降雨量":35.6},
+	{"type":"London","item":"Jan.","value":18.9},
+	{"type":"London","item":"Feb.","value":28.8},
+	{"type":"London","item":"Mar.","value":39.3},
+	{"type":"London","item":"Apr.","value":81.4},
+	{"type":"London","item":"May","value":47},
+	{"type":"London","item":"Jun.","value":20.3},
+	{"type":"London","item":"Jul.","value":24},
+	{"type":"London","item":"Aug.","value":35.6},
 
-	{"name":"Berlin","月份":"Jan.","月均降雨量":12.4},
-	{"name":"Berlin","月份":"Feb.","月均降雨量":23.2},
-	{"name":"Berlin","月份":"Mar.","月均降雨量":34.5},
-	{"name":"Berlin","月份":"Apr.","月均降雨量":99.7},
-	{"name":"Berlin","月份":"May","月均降雨量":52.6},
-	{"name":"Berlin","月份":"Jun.","月均降雨量":35.5},
-	{"name":"Berlin","月份":"Jul.","月均降雨量":37.4},
-	{"name":"Berlin","月份":"Aug.","月均降雨量":42.4},
+	{"type":"Berlin","item":"Jan.","value":12.4},
+	{"type":"Berlin","item":"Feb.","value":23.2},
+	{"type":"Berlin","item":"Mar.","value":34.5},
+	{"type":"Berlin","item":"Apr.","value":99.7},
+	{"type":"Berlin","item":"May","value":52.6},
+	{"type":"Berlin","item":"Jun.","value":35.5},
+	{"type":"Berlin","item":"Jul.","value":37.4},
+	{"type":"Berlin","item":"Aug.","value":42.4},
 
-  {"name":"Beijin","月份":"Jan.","月均降雨量":12.4},
-  {"name":"Beijin","月份":"Feb.","月均降雨量":23.2},
-  {"name":"Beijin","月份":"Mar.","月均降雨量":34.5},
-  {"name":"Beijin","月份":"Apr.","月均降雨量":99.7},
-  {"name":"Beijin","月份":"May","月均降雨量":52.6},
-  {"name":"Beijin","月份":"Jun.","月均降雨量":35.5},
-  {"name":"Beijin","月份":"Jul.","月均降雨量":37.4},
-  {"name":"Beijin","月份":"Aug.","月均降雨量":42.4}
+  {"type":"Beijin","item":"Jan.","value":12.4},
+  {"type":"Beijin","item":"Feb.","value":23.2},
+  {"type":"Beijin","item":"Mar.","value":34.5},
+  {"type":"Beijin","item":"Apr.","value":99.7},
+  {"type":"Beijin","item":"May","value":52.6},
+  {"type":"Beijin","item":"Jun.","value":35.5},
+  {"type":"Beijin","item":"Jul.","value":37.4},
+  {"type":"Beijin","item":"Aug.","value":42.4}
 ];
 
 
 const dataline = [
   {
-      month: "Jan",
       city: "Tokyo",
+      month: "Jan",
       temperature: 7
   },
   {
-      month: "Jan",
       city: "London",
+      month: "Jan",
       temperature: -3.9
   },
   {
-      month: "Feb",
       city: "Tokyo",
+      month: "Feb",
       temperature: 6.9
   },
   {
-      month: "Feb",
       city: "London",
+      month: "Feb",
       temperature: -4.2
   },
   {
@@ -69,98 +69,98 @@ const dataline = [
       temperature: 9.5
   },
   {
-      month: "Mar",
       city: "London",
+      month: "Mar",
       temperature: -5.7
   },
   {
-      month: "Apr",
       city: "Tokyo",
+      month: "Apr",
       temperature: 14.5
   },
   {
-      month: "Apr",
       city: "London",
+      month: "Apr",
       temperature: 8.5
   },
   {
-      month: "May",
       city: "Tokyo",
+      month: "May",
       temperature: 18.4
   },
   {
-      month: "May",
       city: "London",
+      month: "May",
       temperature: 11.9
   },
   {
-      month: "Jun",
       city: "Tokyo",
+      month: "Jun",
       temperature: 21.5
   },
   {
-      month: "Jun",
       city: "London",
+      month: "Jun",
       temperature: 15.2
   },
   {
-      month: "Jul",
       city: "Tokyo",
+      month: "Jul",
       temperature: 25.2
   },
   {
-      month: "Jul",
       city: "London",
+      month: "Jul",
       temperature: 17
   },
   {
-      month: "Aug",
       city: "Tokyo",
+      month: "Aug",
       temperature: 26.5
   },
   {
-      month: "Aug",
       city: "London",
+      month: "Aug",
       temperature: 16.6
   },
   {
-      month: "Sep",
       city: "Tokyo",
+      month: "Sep",
       temperature: 23.3
   },
   {
-      month: "Sep",
       city: "London",
+      month: "Sep",
       temperature: 14.2
   },
   {
-      month: "Oct",
       city: "Tokyo",
+      month: "Oct",
       temperature: 18.3
   },
   {
-      month: "Oct",
       city: "London",
+      month: "Oct",
       temperature: 10.3
   },
   {
-      month: "Nov",
       city: "Tokyo",
+      month: "Nov",
       temperature: 13.9
   },
   {
-      month: "Nov",
       city: "London",
+      month: "Nov",
       temperature: 6.6
   },
   {
-      month: "Dec",
       city: "Tokyo",
+      month: "Dec",
       temperature: 9.6
   },
   {
-      month: "Dec",
       city: "London",
+      month: "Dec",
       temperature: 4.8
   }
 ]
@@ -189,23 +189,22 @@ const datapie = [
 ];
 
 const dataradar = [
-  {"item":"Design","user":"a","score":70},
-  {"item":"Design","user":"b","score":30},
-  {"item":"Development","user":"a","score":60},
-  {"item":"Development","user":"b","score":70},
-  {"item":"Marketing","user":"a","score":50},
-  {"item":"Marketing","user":"b","score":60},
-  {"item":"Users","user":"a","score":40},
-  {"item":"Users","user":"b","score":50},
-  {"item":"Test","user":"a","score":60},
-  {"item":"Test","user":"b","score":70},
-  {"item":"Language","user":"a","score":70},
-  {"item":"Language","user":"b","score":50},
-  {"item":"Technology","user":"a","score":50},
-  {"item":"Technology","user":"b","score":40},
+  {"type":"a","item":"Design","value":70},
+  {"type":"a","item":"Development","value":60},
+  {"type":"a","item":"Marketing","value":50},
+  {"type":"a","item":"Users","value":40},
+  {"type":"a","item":"Test","value":60},
+  {"type":"a","item":"Language","value":70},
+
+  {"type":"b","item":"Design","value":30},
+  {"type":"b","item":"Development","value":70},
+  {"type":"b","item":"Marketing","value":60},
+  {"type":"b","item":"Users","value":50},
+  {"type":"b","item":"Test","value":70},
+  {"type":"b","item":"Language","value":50},
 ]
 
-const datapercent = {"item":"a","value":34,"total":100};
+const datapercent = {"value":34,"total":100};
 
 
 
@@ -228,7 +227,27 @@ const defaultProps = {
 		data:{
       dataType:'static',
 			dataset:databar,
-
+      dataDemo:[
+          {"type":"London","item":"Jan.","value":18.9},
+          {"type":"London","item":"Feb.","value":28.8},
+      ],
+      dataMap:[
+          {
+              name:'系列',
+              key:'type',
+              value:'type'
+          },
+          {
+              name:'类别',
+              key:'item',
+              value:'item'
+          },
+          {
+              name:'值',
+              key:'value',
+              value:'value'
+          }
+        ]
 		}
 	}),
 	ChartLine:(theme)=>({
@@ -249,8 +268,37 @@ const defaultProps = {
     },
 		data:{
         dataType:'static',
-  			dataset:dataline
-		}
+  			dataset:dataline,
+        dataDemo:[
+          {
+              city: "Tokyo",
+              month: "Jan",
+              temperature: 7
+          },
+          {
+              city: "London",
+              month: "Jan",
+              temperature: -3.9
+          },
+        ],
+        dataMap:[
+          {
+                name:'系列',
+                key:'type',
+                value:'city'
+            },
+            {
+                name:'类别',
+                key:'item',
+                value:'month'
+            },
+            {
+                name:'值',
+                key:'value',
+                value:'temperature'
+            }
+        ]
+      }
 	}),
   ChartPie:(theme)=>({
     atype:'chart',
@@ -269,7 +317,29 @@ const defaultProps = {
     },
     data:{
         dataType:'static',
-        dataset:datapie
+        dataset:datapie,
+        dataDemo:[
+          {
+            item: "A",
+            count: 10
+          },
+          {
+            item: "B",
+            count: 21
+          }
+      ],
+      dataMap:[
+          {
+                name:'类别',
+                key:'item',
+                value:'item'
+            },
+            {
+                name:'值',
+                key:'value',
+                value:'count'
+            }
+        ]
     }
   }),
   ChartRadar:(theme)=>({
@@ -286,7 +356,28 @@ const defaultProps = {
     },
     data:{
         dataType:'static',
-        dataset:dataradar
+        dataset:dataradar,
+        dataDemo:[
+          {"type":"a","item":"Design","value":70},
+          {"type":"b","item":"Development","value":60},
+        ],
+        dataMap:[
+            {
+                name:'系列',
+                key:'type',
+                value:'type'
+            },
+            {
+                name:'类别',
+                key:'item',
+                value:'item'
+            },
+            {
+                name:'值',
+                key:'value',
+                value:'value'
+            }
+        ]
     }
   }),
   ChartPercent:(theme)=>({
@@ -312,12 +403,12 @@ const defaultProps = {
         dataMap:[
             {
                 name:'当前值',
-                defautValue:'value',
+                key:'value',
                 value:'value'
             },
             {
                 name:'总量',
-                defautValue:'total',
+                key:'total',
                 value:'total'
             }
         ]
@@ -346,18 +437,20 @@ const ChartBase = React.memo((props) => {
 
 const ChartBar = React.memo((props) => {
 
-	const { theme,themeColor,props:{type,transpose,labelVisible,hollow} } = props;
+	const { theme,themeColor,props:{type,transpose,labelVisible,hollow},data:{dataMap} } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
+
+  const [{ value:name  },{ value:item},{ value:value}] = dataMap;
 
 	return (
     <ChartBase {...props}>
-        <Axis name="月均降雨量" grid={null} label={{textStyle:{fill:color}}} />
-        <Axis name="月份" line={{stroke:color,opacity:.5}} tickLine={null} label={{textStyle:{fill:color}}} />
+        <Axis name={value} grid={null} label={{textStyle:{fill:color}}} />
+        <Axis name={item} line={{stroke:color,opacity:.5}} tickLine={null} label={{textStyle:{fill:color}}} />
         <Geom
             type={type}
-            position="月份*月均降雨量"
+            position={`${item}*${value}`}
             shape={hollow?"hollowRect":"rect"}
-            color={["name",themeColor]}
+            color={[name,themeColor]}
             style={{
                 lineWidth: hollow?1:0
             }}
@@ -365,7 +458,7 @@ const ChartBar = React.memo((props) => {
         >
           {
               labelVisible &&
-              <Label content="月均降雨量" offset={10} />
+              <Label content={value} offset={10} />
           }
         </Geom>
         <Coord transpose={transpose}/>
@@ -377,35 +470,37 @@ ChartBar.defaultProps = (theme)=>defaultProps.ChartBar(theme);
 
 const ChartLine = React.memo((props) => {
 
-	const { theme,themeColor,props:{lineShape,dotSize,dotVisible,lineSize,labelVisible,showArea} } = props;
+	const { theme,themeColor,props:{lineShape,dotSize,dotVisible,lineSize,labelVisible,showArea},data:{dataMap} } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
+
+  const [{ value:type  },{ value:item},{ value:value}] = dataMap;
 
 	return (
     <ChartBase {...props}>
-        <Axis name="temperature" grid={null} label={{textStyle:{fill:color}}} />
-        <Axis name="month" line={{stroke:color,opacity:.5}} tickLine={null} label={{textStyle:{fill:color}}} />
+        <Axis name={value} grid={null} label={{textStyle:{fill:color}}} />
+        <Axis name={item} line={{stroke:color,opacity:.5}} tickLine={null} label={{textStyle:{fill:color}}} />
         <Geom
             type="line"
-            position="month*temperature"
+            position={`${item}*${value}`}
             size={lineSize}
-            color={["city",themeColor]}
+            color={[type,themeColor]}
             shape={lineShape}
         />
         <Geom
             type="point"
-            position="month*temperature"
+            position={`${item}*${value}`}
             size={dotSize}
-            color={["city",themeColor]}
-            shape={["city"]}
+            color={[type,themeColor]}
+            shape={[type]}
             opacity={dotVisible?1:0}
         >
         {
             showArea &&
-            <Geom type="area" position="month*temperature" color={['city',themeColor]} opacity={0.2} />
+            <Geom type="area" position={`${item}*${value}`} color={[type,themeColor]} opacity={0.2} />
         }
         {
             labelVisible &&
-            <Label content="temperature" offset={10} />
+            <Label content={value} offset={10} />
         }
         </Geom>
     </ChartBase>
@@ -416,13 +511,16 @@ ChartLine.defaultProps = (theme)=>defaultProps.ChartLine(theme);
 
 const ChartPie = React.memo((props) => {
 
-  const { style:{width,height},theme,themeColor,props:{ring, rose, labelVisible,lebelPosition}, data:{dataset} } = props;
+  const { style:{width,height},theme,themeColor,props:{ring, rose, labelVisible,lebelPosition}, data:{dataset,dataMap} } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
-  const total = dataset.reduce((a,b)=>a+b.count,0);
+
+  const [{ value:item},{ value:value}] = dataMap;
+
+  const total = dataset.reduce((a,b)=>a+b[value],0);
   
   const data =  dataset.map(el=>({
       ...el,
-      percent:el.count/total
+      percent:el[value]/total
   }))
 
   const innerside = lebelPosition==='innerside'&&!ring&&!rose?{
@@ -437,10 +535,10 @@ const ChartPie = React.memo((props) => {
     <ChartBase {...props} data={{dataset:data}}>
         <Geom
           type="intervalStack"
-          position={rose?"item*percent":"percent"}
-          color={["item",themeColor]}
+          position={rose?`${item}*percent`:"percent"}
+          color={[item,themeColor]}
           tooltip={[
-              'item*percent',
+              `${item}*percent`,
               (item, percent) => {
                 percent = `${percent * 100}%`;
                 return {
@@ -477,11 +575,13 @@ ChartPie.defaultProps = (theme)=>defaultProps.ChartPie(theme);
 
 const ChartRadar = React.memo((props) => {
 
-  const { theme,themeColor,props:{axiShape} } = props;
+  const { theme,themeColor,props:{axiShape},data:{dataMap} } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
 
+  const [{ value:type  },{ value:item},{ value:value}] = dataMap;
+
   const cols = {
-      score: {
+      [value]: {
           min: 0,
           tickCount: 5,
       }
@@ -490,7 +590,7 @@ const ChartRadar = React.memo((props) => {
   return (
     <ChartBase {...props} scale={cols}>
         <Axis
-            name="item"
+            name={item}
             line={null}
             tickLine={null}
             label={{textStyle:{fill:color}}}
@@ -504,7 +604,7 @@ const ChartRadar = React.memo((props) => {
             }}
         />
         <Axis
-            name="score"
+            name={value}
             line={null}
             tickLine={null}
             label={null}
@@ -518,12 +618,12 @@ const ChartRadar = React.memo((props) => {
               alternateColor: "rgba(0, 0, 0, 0.1)",
             }}
         />
-        <Geom type="area" position="item*score" color={["user",themeColor]} />
-        <Geom type="line" position="item*score" color={["user",themeColor]} size={2} />
+        <Geom type="area" position={`${item}*${value}`} color={[type,themeColor]} />
+        <Geom type="line" position={`${item}*${value}`} color={[type,themeColor]} size={2} />
         <Geom
             type="point"
-            position="item*score"
-            color={["user",themeColor]}
+            position={`${item}*${value}`}
+            color={[type,themeColor]}
             shape="circle"
             size={3}
             style={{
@@ -540,22 +640,24 @@ ChartRadar.defaultProps = (theme)=>defaultProps.ChartRadar(theme);
 
 const ChartPercent = React.memo((props) => {
 
-  const { theme,themeColor,props:{percentColor,titleVisible,title=''}, data:{dataset} } = props;
+  const { theme,themeColor,props:{percentColor,titleVisible,title=''}, data:{dataset,dataMap} } = props;
 
   const color = theme==='dark'?'rgba(255,255,255,.2)':'rgba(0,0,0,.2)';
 
-  const data = [dataset,{
+  const [{ value:value  },{ value:total}] = dataMap;
+
+  const data = [{...dataset,item:'current'},{
       item:'other',
-      value:dataset.total-dataset.value
+      [value]:dataset[total]-dataset[value]
   }]
 
-  const percent = parseInt(dataset.value/dataset.total * 100,10);
+  const percent = parseInt(dataset[value]/dataset[total] * 100,10);
 
   return (
     <ChartBase {...props} data={{dataset:data}}>
         <Geom
           type="intervalStack"
-          position={"value"}
+          position={value}
           color={["item",[themeColor[percentColor],color]]}
         />
         <Coord type={"theta"} radius={0.8} innerRadius={0.7} />

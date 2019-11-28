@@ -257,7 +257,7 @@ class View extends PureComponent {
 				data-select={select}
 				autoFocus={true}
 				style={{'--x':left,'--y':top,width,height,'--zoom':zoom}} 
-				tabIndex="-1"
+				tabIndex="-2"
 				ref={this.view} 
 				draggable={draggable}
 				onClick={onClick}
