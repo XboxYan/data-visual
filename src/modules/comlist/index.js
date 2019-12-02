@@ -25,6 +25,10 @@ const comList = [{
     name: '百分图',
     icon: 'loading-3-quarters',
     type: 'ChartPercent'
+  }, {
+    name: '地图',
+    icon: 'global',
+    type: 'ChartMap'
   }]
 }, {
   name: '图片',

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback} from 'react';
 import View from '../view';
 import {
   Chart,
@@ -10,6 +10,10 @@ import {
   Legend,
   Guide,
 } from "bizcharts";
+import DataSet from '@antv/data-set';
+import china from '../../map/china.js'
+
+
 
 
 const databar = [
@@ -206,6 +210,39 @@ const dataradar = [
 
 const datapercent = {"value":34,"total":100};
 
+const datamap = [
+      { key: '10105', name: '广东', value: 0.1138 },
+      { key: '10125', name: '四川', value: 0.0899 },
+      { key: '10102', name: '安徽', value: 0.0695 },
+      { key: '10130', name: '浙江', value: 0.0525 },
+      { key: '10112', name: '湖北', value: 0.0505 },
+      { key: '10124', name: '上海', value: 0.0495 },
+      { key: '10103', name: '福建', value: 0.0484 },
+      { key: '10131', name: '重庆', value: 0.0419 },
+      { key: '10115', name: '江苏', value: 0.0402 },
+      { key: '10123', name: '陕西', value: 0.0388 },
+      { key: '10121', name: '山东', value: 0.0387 },
+      { key: '10109', name: '河北', value: 0.0359 },
+      { key: '10116', name: '江西', value: 0.0315 },
+      { key: '10113', name: '湖南', value: 0.0304 },
+      { key: '10129', name: '云南', value: 0.0294 },
+      { key: '10101', name: '北京', value: 0.0246 },
+      { key: '10104', name: '甘肃', value: 0.0232 },
+      { key: '10114', name: '吉林', value: 0.0229 },
+      { key: '10107', name: '贵州', value: 0.0223 },
+      { key: '10106', name: '广西', value: 0.022 },
+      { key: '10110', name: '河南', value: 0.019 },
+      { key: '10117', name: '辽宁', value: 0.0152 },
+      { key: '10118', name: '内蒙古', value: 0.0142 },
+      { key: '10128', name: '新疆', value: 0.0142 },
+      { key: '10111', name: '黑龙江', value: 0.014 },
+      { key: '10126', name: '天津', value: 0.0122 },
+      { key: '10122', name: '山西', value: 0.0103 },
+      { key: '10108', name: '海南', value: 0.0098 },
+      { key: '10119', name: '宁夏', value: 0.008 },
+      { key: '10120', name: '青海', value: 0.0052 },
+      { key: '10127', name: '西藏', value: 0.002 },
+    ]
 
 
 const defaultProps = {
@@ -412,18 +449,54 @@ const defaultProps = {
                 value:'total'
             }
         ]
-    }
+    },
+
+  }),
+  ChartMap:(theme)=>({
+    atype:'chart',
+    style:{
+        width: 400,
+        height: 400,
+        opacity: 1,
+    },
+    props:{
+        lockRatio:true,
+        percentColor:0,
+        titleVisible:false,
+        title:'百分比'
+    },
+    data:{
+        dataType:'static',
+        dataset:datamap,
+        dataDemo:{
+          "value":34,
+          "total":100
+        },
+        dataMap:[
+            {
+                name:'当前值',
+                key:'value',
+                value:'value'
+            },
+            {
+                name:'总量',
+                key:'total',
+                value:'total'
+            }
+        ]
+    },
+    
   }),
 }
 
 const ChartBase = React.memo((props) => {
 
-  const { theme, scale={}, style:{width,height},props:{legendVisible,legendPosition},data: {dataset},children } = props;
+  const { theme, scale={},padding="auto", style:{width,height},props:{legendVisible,legendPosition},data: {dataset},children } = props;
   const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
 
   return (
     <View className="chart-view" {...props} >
-      <Chart width={width} height={height} scale={scale} data={dataset} background={{fill:'transparent'}} plotBackground={{fill:'transparent'}} padding="auto" theme={theme}>
+      <Chart width={width} height={height} scale={scale} data={dataset} background={{fill:'transparent'}} plotBackground={{fill:'transparent'}} padding={padding} theme={theme}>
         <Legend visible={legendVisible} position={legendPosition} textStyle={{fill:color}} />
         <Tooltip />
         {
@@ -516,12 +589,16 @@ const ChartPie = React.memo((props) => {
 
   const [{ value:item},{ value:value}] = dataMap;
 
-  const total = dataset.reduce((a,b)=>a+b[value],0);
-  
-  const data =  dataset.map(el=>({
-      ...el,
-      percent:el[value]/total
-  }))
+  const [dataPie,setDataPie]=useState([]);
+
+  useEffect(()=>{
+      const total = dataset.reduce((a,b)=>a+b[value],0);
+      const data = dataset.map(el=>({
+          ...el,
+          percent:el[value]/total
+      }))
+      setDataPie(data);
+  },[dataset])
 
   const innerside = lebelPosition==='innerside'&&!ring&&!rose?{
       offset:-Math.min(width,height)*0.2+8,
@@ -531,21 +608,27 @@ const ChartPie = React.memo((props) => {
       }
   }:{}
 
+  const fn = useCallback((name, value) => (item, percent) => {
+    percent = `${percent * 100}%`;
+    return {
+      name: item,
+      value: percent,
+    };
+  },[])
+
+  const formatter = useCallback((val, item) => {
+      return (lebelPosition==='outside'||rose||ring?(item.point.item + ': '):'')+(val*100).toFixed(0) + '%';
+  },[lebelPosition])
+
   return (
-    <ChartBase {...props} data={{dataset:data}}>
+    <ChartBase {...props} data={{dataset:dataPie}}>
         <Geom
           type="intervalStack"
           position={rose?`${item}*percent`:"percent"}
           color={[item,themeColor]}
           tooltip={[
               `${item}*percent`,
-              (item, percent) => {
-                percent = `${percent * 100}%`;
-                return {
-                  name: item,
-                  value: percent,
-                };
-              },
+              fn,
           ]}
         >
             {
@@ -556,9 +639,7 @@ const ChartPie = React.memo((props) => {
                     labelLine={{lineWidth: 1}}
                     textStyle={{fill:color}}
                     {...innerside}
-                    formatter={(val, item) => {
-                        return (lebelPosition==='outside'||rose||ring?(item.point.item + ': '):'')+(val*100).toFixed(0) + '%';
-                    }}
+                    formatter={formatter}
                 />
             }
         </Geom>
@@ -646,15 +727,20 @@ const ChartPercent = React.memo((props) => {
 
   const [{ value:value  },{ value:total}] = dataMap;
 
-  const data = [{...dataset,item:'current'},{
-      item:'other',
-      [value]:dataset[total]-dataset[value]
-  }]
+  const [dataPer,setDataPer]=useState([]);
+
+  useEffect(()=>{
+      const data = [{...dataset,item:'current'},{
+          item:'other',
+          [value]:dataset[total]-dataset[value]
+      }]
+      setDataPer(data);
+  },[dataset])
 
   const percent = parseInt(dataset[value]/dataset[total] * 100,10);
 
   return (
-    <ChartBase {...props} data={{dataset:data}}>
+    <ChartBase {...props} data={{dataset:dataPer}}>
         <Geom
           type="intervalStack"
           position={value}
@@ -662,7 +748,7 @@ const ChartPercent = React.memo((props) => {
         />
         <Coord type={"theta"} radius={0.8} innerRadius={0.7} />
         <Legend name="item" visible={false} />
-        <Tooltip triggerOn="none"/>
+        <Tooltip showTitle={false} triggerOn="none"/>
         <Guide>
             <Guide.Html
                 position={["50%", "50%"]}
@@ -676,4 +762,69 @@ const ChartPercent = React.memo((props) => {
 
 ChartPercent.defaultProps = (theme)=>defaultProps.ChartPercent(theme);
 
-export { ChartBar, ChartLine, ChartPie, ChartRadar, ChartPercent };
+const ChartMap = React.memo((props) => {
+
+  const { theme,themeColor,props:{axiShape},data:{dataMap,dataset}} = props;
+  const color = theme==='dark'?'rgba(255, 255, 255, 1)':'rgba(31, 31, 31, 1)';
+  const [geoDv,setGeoDev]=useState([]);
+
+  //const [{ value:type  },{ value:item},{ value:value}] = dataMap;
+
+  const scale = {
+      latitude: {
+        sync: true,
+        nice: false,
+      },
+      longitude: {
+        sync: true,
+        nice: false,
+      },
+  };
+
+  const fn = useCallback((name, value) => ({
+    name,
+    value,
+  }),[])
+
+  useEffect(()=>{
+      const { features } = china;
+      features.forEach((one) => {
+        const name = one && one.properties && one.properties.name;
+        dataset.forEach((item) => {
+          if (name.includes(item.name)) {
+            one.value = item.value;
+          }
+        });
+      });
+      const geo = new DataSet.View().source(china, { type: 'GeoJSON' });
+      setGeoDev(geo);
+  },[dataset])
+
+
+  return (
+    <ChartBase {...props} scale={scale} data={{dataset:geoDv}} padding={20}>
+        <Geom
+          type="polygon"
+          position="longitude*latitude"
+          color={['value', [themeColor[0],themeColor[1]]]}
+          style={{
+            fill:'red',
+            stroke: '#f1f1f1',
+            lineWidth: 0.5,
+            fillOpacity: 0.85,
+          }}
+          tooltip={[
+              'name*value',
+              fn,
+            ]}
+        />
+        <Tooltip showTitle={false} />
+        <Legend position="bottom-left" name="value" sizeType="normal" offsetY={-60} textStyle={{fill:color,stroke:'transparent'}} />
+    </ChartBase>
+  )
+})
+
+ChartMap.defaultProps = (theme)=>defaultProps.ChartMap(theme);
+
+
+export { ChartBar, ChartLine, ChartPie, ChartRadar, ChartPercent, ChartMap };
