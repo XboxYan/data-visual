@@ -608,7 +608,7 @@ const ChartPie = React.memo((props) => {
       }
   }:{}
 
-  const fn = useCallback((name, value) => (item, percent) => {
+  const fn = useCallback((item, percent) => {
     percent = `${percent * 100}%`;
     return {
       name: item,

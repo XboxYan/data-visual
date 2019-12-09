@@ -401,7 +401,8 @@ const Main = () => {
 	},[config.backgroundTempURL])
 
 	return (
-		<div className="desk-top" 
+		<div className="desk-top"
+			onPaste={paste}
 			data-move={move}
 			data-grid={config.gridvisible&&config.grid>=5}
 			data-theme={config.theme}
@@ -425,7 +426,7 @@ const Main = () => {
 			onDrop={drop}
 		>
 			<img alt="desk-background" className="desk-background" src={config.backgroundTempURL||config.backgroundImage} />
-			<textarea onPaste={paste} ref={input} className="desk-paste" />
+			<textarea ref={input} className="desk-paste" />
 			{
 				layout.map((el,i)=>{
 					if(el){

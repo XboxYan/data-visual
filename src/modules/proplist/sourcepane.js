@@ -89,7 +89,7 @@ const SourcePane = () => {
 		            <div className="form-item">
 		            	{
 		            		atype === 'image' &&
-		            		<ImgUpload url={values.src} tempUrl={values.tempSrc} onChange={(value,tempUrl,width,height)=>setValue({style:{width,height},data:{src:value,tempSrc:tempUrl||''}})}/>
+		            		<ImgUpload url={values.src} tempUrl={values.tempSrc} onChange={(value,tempUrl,width,height)=>setValue({style:{width,height},props:{naturalSize:[width,height]},data:{src:value,tempSrc:tempUrl||''}})}/>
 		            	}
 		            	{
 		            		atype === 'text' &&
